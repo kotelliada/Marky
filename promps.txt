@@ -1,0 +1,37 @@
+# Design brainstorming
+
+I want to create designs in HTML here for this Android, iOS and Desktop (JVM) app supporting Markdown editing that you simply draft as HTML in the browser. All the
+  specifications for these designs you can find here at the following link: https://markdown-editor.notion.site/ Please, let's first of all brainstorm how these designs could
+  look for such an app. Give me three different variants and three different example designs for the nodes that we will render here, so I can get a vision of which direction
+  this is going in. Then I will decide on one of these designs ot tell you that none of them work, and then we will go on with further drafting.
+
+Let's proceed with the Margin variant. First of all, draft a design system for this, where you include the different fonts that we have to use and which variants of these
+  fonts exist. We want to know the exact colors and hex codes for that. We want to have separate sections for all kinds of different reusable UI components that we need across
+  the app, with every state considered (for example, buttons being enabled, buttons being disabled, icons, etc.). Everything we just need on a reusable basis needs to be
+  encoded in the design system first of all, and then we want to have an interactive website where we can clink into specific feature: the notes list, the notes preview, the
+  search feature. There, we can, in the end, see all the screens and screen variants, including empty states for these different screens, applying the design system built
+  before. You can do all of that in one go.
+
+The design system page and prototype page has a flashing cursor inside No notes preview which seems a bug
+
+# Creating Agents.md
+
+I want to generate an Agents.md file as the system prompt, along with a Claude.md file that symlink to it. We want to populate the Agents.md file with information about what
+  this app is about, which you can find in the specification for this: https://markdown-editor.notion.site/ Also, link the specification in the system prompt, then link our
+  designs in the designs folder as the single source of truth for all UI components. The agent should never make up UI or use the base components for that, but always relate to
+  the designs here locally in the project. If something is missing, it should flag that and ask us how to proceed. Then read the KMP module structure skill to understand where
+  things live, and just give the system prompt a brief outline for future sessions to know where to look for things and where put things. We want to define the definition of
+  done.
+ Additionally, in this simple project that is also simple, we just want to take a look at having a clean build for Android, iOS and Desktop, and we want to have passing local
+  unit tests. We explicitly do not want to have more advanced types of tests like UI tests or end-to-end tests. That is out of scope here and should be part of system prompt.
+  We just want to focus on Unit tests.
+  Additionally, take a look in this project-specific .claude folder and the skills we have here. Because they include all sorts of important coventions about how we want to do
+  things in this project and what we just consider as best practices. These skills should have a rough map in out system prompt, which skill should be invoked when. Also, put
+  an information in system prompt that the agent should automatically commit the unit of work when something successfull has been done. Then it is important to mention that you
+  should never make any assumptions about what we are building, but when an assumption is made, then I want to be informed about that and possibly challenged or at least
+  informed about that in a separate section where I have an option to intervene if I disagree.
+  Also include a section about the tech stack we want to use, all the libraries, etc. which you can primarily find in the project-specific skills folder. So include all of
+  those libraries that these skills suggest also in the system prompt. And ask me about anything else we may need for this project that is not explicitly outlined in these
+  skills. And that is then something we agree on together. What I can already say is that this is a Kotlin Multiplatform project and for the UI we want to use Compose
+  Multiplatform and for Markdown parsing we want to use the official Jetbrain Markdown parsing library.
+
