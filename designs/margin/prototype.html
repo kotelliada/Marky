@@ -1,0 +1,344 @@
+<title>Marky Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400;1,600&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="docs.css">
+
+<header class="doc-top">
+  <div class="doc-top__in">
+    <div class="doc-brand"><b>Marky · Prototype</b><span>Margin v1.0 · every screen and state</span></div>
+    <div class="doc-ctrl"><span id="plat-label">Device</span><div class="doc-seg" id="platform" role="group" aria-labelledby="plat-label"><button type="button" data-plat="phone">Phone</button><button type="button" data-plat="desktop">Desktop</button></div></div>
+    <div class="doc-ctrl"><span id="theme-label">Theme</span><div class="doc-seg" id="theme" role="group" aria-labelledby="theme-label"><button type="button" data-theme-set="system">System</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+    <a class="doc-link" id="ds-link" href="https://claude.ai/artifact/UMpjWKUvaJhnNpLDeRWx27" target="_blank" rel="noopener">Design system<svg class="mk-ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</header>
+
+<div class="proto">
+  <nav class="proto-nav" id="nav" aria-label="Screens and states"></nav>
+  <main class="proto-stage" id="stage" aria-label="Device preview"></main>
+  <aside class="proto-info" id="info" aria-live="polite"></aside>
+</div>
+
+<script src="marky.js"></script>
+<script>
+(function () {
+"use strict";
+const M = window.Marky, $ = s => document.querySelector(s);
+const stage = $("#stage"), nav = $("#nav"), info = $("#info");
+const root = document.documentElement;
+
+/* ---------- theme + platform ---------- */
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+function setTheme(t, save) {
+  if (t === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
+  document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
+  if (save) store.set("mk-theme", t);
+}
+setTheme(store.get("mk-theme") || root.getAttribute("data-theme") || "system");
+$("#theme").addEventListener("click", e => { const b = e.target.closest("[data-theme-set]"); if (b) setTheme(b.dataset.themeSet, true); });
+
+let platform = store.get("mk-platform") === "desktop" ? "desktop" : "phone";
+function setPlatform(p) {
+  platform = p; store.set("mk-platform", p);
+  document.querySelectorAll("[data-plat]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.plat === p)));
+  draw(); renderInfo();
+}
+$("#platform").addEventListener("click", e => { const b = e.target.closest("[data-plat]"); if (b) setPlatform(b.dataset.plat); });
+
+/* ---------- state ---------- */
+let db = [], S = {}, nextId = 200, current = null, focusSearch = false, snackTimer = null;
+const base = () => ({ screen: "list", id: null, mode: "preview", menu: false, dialog: false, snack: null, q: "", kb: false, sel: false, titleFocus: false, flashId: null, caret: null });
+const sorted = () => db.slice().sort((a, b) => (b.pinned - a.pinned) || (a.age - b.age));
+const deskId = () => { if (S.id != null && db.some(n => n.id === S.id)) return S.id; const s = sorted(); return s.length ? s[0].id : null; };
+const effId = () => platform === "desktop" ? deskId() : S.id;
+const note = () => db.find(n => n.id === effId());
+const ERR = { kind: "import-error", icon: "alert", msg: "Couldn’t import “scan.pdf”. Choose a Markdown (.md) file.", action: "Choose file", sticky: true };
+
+const G = { list: ["Notes list", "list"], note: ["Note", "note"], search: ["Search", "search"] };
+const V = [
+  { id: "list-default", g: "list", name: "Default",
+    desc: "The home screen. Pinned notes sit on top, then every other note by last edited. Each row shows the title, a two-line preview of the text without Markdown syntax, and the time since the last edit.",
+    tries: ["Tap a row to open the note", "Tap the search field to open Search", "Tap the import icon to bring in a .md file", "Tap New note"],
+    uses: ["App bar", "Icon button", "Search field (entry)", "Section label", "Note row", "Bottom bar", "Button L"],
+    desk: "On desktop the list lives in the sidebar and the most recent note is open next to it.",
+    set() { db = M.SAMPLE(); S = base(); } },
+  { id: "list-unpinned", g: "list", name: "Nothing pinned",
+    desc: "With no pinned notes the section labels are left out and the list starts right under the search field.",
+    tries: ["Open a note and pin it to bring the labels back"],
+    uses: ["Note row", "Search field (entry)", "Bottom bar"],
+    set() { db = M.SAMPLE().map(n => ({ ...n, pinned: false })); S = base(); } },
+  { id: "list-empty", g: "list", name: "No notes",
+    desc: "Shown once every note is deleted. New note stays in the bottom bar so the main action never moves; the empty state adds import as the second way in.",
+    tries: ["Tap Import .md file", "Tap New note"],
+    uses: ["Empty state", "Button M secondary", "Bottom bar"],
+    desk: "Desktop shows the message in the note pane with both actions, and a small version in the sidebar.",
+    set() { db = []; S = base(); } },
+  { id: "list-imported", g: "list", name: "After import",
+    desc: "The person picked “Meeting notes.md”. They stay on the list. The note counts as created and edited at import time, so it appears at the top of the unpinned notes, with a short highlight so it is easy to spot.",
+    tries: ["Press Reset to replay the highlight"],
+    uses: ["Note row (just imported)"],
+    set() { db = M.SAMPLE(); const x = M.IMPORTED(); db.push(x); S = base(); S.flashId = x.id; } },
+  { id: "list-error", g: "list", name: "Import failed",
+    desc: "The picked file could not be imported. A snackbar says which file and what to do; the list stays usable underneath.",
+    tries: ["Tap Choose file to try again (it succeeds this time)"],
+    uses: ["Snackbar with action"],
+    set() { db = M.SAMPLE(); S = base(); S.snack = ERR; } },
+
+  { id: "note-preview", g: "note", name: "Preview",
+    desc: "Reading mode. Markdown renders formatted. Checklist items can be ticked and write [x] back to the source, links open in the browser, code blocks can be copied.",
+    tries: ["Tick a checklist item", "Copy the code block", "Switch to Edit", "Pin or unpin with the pin icon", "Open the More menu"],
+    uses: ["App bar (note)", "Segmented control", "Title field", "Note meta", "Markdown nodes", "Checklist item"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 1 }; } },
+  { id: "note-edit", g: "note", name: "Edit",
+    desc: "The raw Markdown, with syntax tinted in the accent. The formatting toolbar sits above the keyboard and types the same syntax a person could type. Changes save automatically; there is no save button.",
+    tries: ["Switch back to Preview to see the same text formatted"],
+    uses: ["Editor", "Formatting toolbar", "Segmented control"],
+    desk: "On desktop the toolbar sits at the top of the editor and there is no on-screen keyboard.",
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 3, mode: "edit", caret: "Sintra day trip" }; } },
+  { id: "note-selection", g: "note", name: "Edit with selection",
+    desc: "“Príncipe Real” is selected. It is already wrapped in *…*, so Italic shows as active; tapping it would remove the asterisks. Tapping Bold would wrap the selection in **…**.",
+    tries: [],
+    uses: ["Formatting toolbar (active tool)", "Editor selection"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 3, mode: "edit", sel: true }; } },
+  { id: "note-new", g: "note", name: "New note",
+    desc: "New note creates an empty note and opens it in Edit with the title focused, so writing starts with one tap. The toolbar is disabled until the cursor moves into the body, because formatting applies to the text only.",
+    tries: ["Go back: the new note is in the list as Untitled"],
+    uses: ["Title field (empty, focused)", "Editor (empty)", "Formatting toolbar (disabled)"],
+    set() { db = M.SAMPLE(); db.push({ id: 150, title: "", body: "", age: 0, pinned: false }); S = { ...base(), screen: "note", id: 150, mode: "edit", titleFocus: true }; } },
+  { id: "note-empty-preview", g: "note", name: "Empty preview",
+    desc: "A note with a title and no text, opened in Preview. The empty state points to Edit.",
+    tries: ["Tap Edit note"],
+    uses: ["Empty state", "Button M secondary"],
+    set() { db = M.SAMPLE(); db.push({ id: 151, title: "Ideas", body: "", age: 6, pinned: false }); S = { ...base(), screen: "note", id: 151 }; } },
+  { id: "note-menu", g: "note", name: "More actions",
+    desc: "Pin or unpin, export as .md, and delete. Delete sits below a separator, in red.",
+    tries: ["Export the note", "Delete the note", "Tap outside to close"],
+    uses: ["Menu", "Icon button (pressed)"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 3, menu: true }; } },
+  { id: "note-delete", g: "note", name: "Delete confirmation",
+    desc: "Names the note being deleted and says that deleting can’t be undone. Cancel, Esc or a tap outside closes it.",
+    tries: ["Delete: you land on the list with a confirmation", "Cancel"],
+    uses: ["Dialog", "Button secondary", "Button danger"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 3, dialog: true }; } },
+  { id: "note-exported", g: "note", name: "Exported",
+    desc: "After the system save dialog closes, a snackbar confirms the file name. The file is named after the note title.",
+    tries: [],
+    uses: ["Snackbar"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "note", id: 3, snack: { msg: "Exported “Lisbon trip.md”", sticky: true } }; } },
+
+  { id: "search-start", g: "search", name: "Start typing",
+    desc: "The field is focused as the screen opens and the keyboard is up. The empty state says what search covers.",
+    tries: ["Type “lisbon”, “tram” or “notes”", "Type something that matches nothing"],
+    uses: ["App bar (search)", "Search field", "Empty state"],
+    desk: "On desktop search replaces the list in the sidebar while the open note stays in view. Esc closes it.",
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "search", kb: true }; } },
+  { id: "search-results", g: "search", name: "Results",
+    desc: "Query “notes”. Title matches come first (Book notes: Deep Work), then notes that mention the word in their text, each group by last edited. Every hit is highlighted in the title and in a snippet taken from around the first match.",
+    tries: ["Change the query", "Open a result"],
+    uses: ["Section label (count)", "Note row with highlights"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "search", q: "notes" }; } },
+  { id: "search-none", g: "search", name: "No results",
+    desc: "Nothing matched “bananas”. The message repeats the query and suggests what to try.",
+    tries: ["Clear the field with the × button"],
+    uses: ["Empty state"],
+    set() { db = M.SAMPLE(); S = { ...base(), screen: "search", q: "bananas" }; } }
+];
+
+/* ---------- render ---------- */
+function snack(where) {
+  if (!S.snack) return "";
+  const cls = where === "desk" ? "mk-snack-host mk-snack-host--desk" : where === "bar" ? "mk-snack-host mk-snack-host--above-bar" : "mk-snack-host";
+  return `<div class="${cls}">${M.snack(S.snack)}</div>`;
+}
+function noteBody(n) {
+  const head = `${M.titleField({ value: n.title, state: S.mode === "edit" && S.titleFocus ? "focus" : undefined })}<div class="mk-meta">${M.meta(n)}</div>`;
+  if (S.mode === "preview") return head + (n.body.trim() ? M.render(n.body) : M.EMPTY.preview());
+  return head + M.source(n.body, {
+    sel: S.sel ? "Príncipe Real" : null,
+    caretAfter: !S.sel && !S.titleFocus ? S.caret : null,
+    caretEnd: !S.sel && !S.titleFocus && !S.caret,
+    noCaret: S.titleFocus
+  });
+}
+const menuHtml = n => S.menu ? `<button type="button" class="mk-menu-backdrop" aria-label="Close menu" data-act="close-menu"></button>${M.noteMenu(n, { anchored: true })}` : "";
+const listSections = (row) => {
+  const s = sorted(), p = s.filter(n => n.pinned), r = s.filter(n => !n.pinned);
+  return p.length ? M.overline("Pinned") + p.map(row).join("") + (r.length ? M.overline("Recent") + r.map(row).join("") : "") : r.map(row).join("");
+};
+function results(desk) {
+  if (!S.q.trim()) return desk ? M.EMPTY.search({ size: "s" }) : M.EMPTY.search();
+  const r = M.search(db, S.q);
+  if (!r.length) return desk ? M.EMPTY.none(S.q, { size: "s" }) : M.EMPTY.none(S.q);
+  const id = deskId();
+  return M.overline(`${r.length} ${r.length === 1 ? "result" : "results"}`) + r.map(x => M.row({ n: x.n, q: S.q, desk, selected: desk && x.n.id === id })).join("");
+}
+const resultsCentered = () => !S.q.trim() || !M.search(db, S.q).length;
+
+function phone() {
+  let inner = "", overlay = "";
+  const n = note();
+  if (S.screen === "note" && n) {
+    inner = M.appbarNote({ n, mode: S.mode, menuOpen: S.menu })
+      + `<div class="mk-scroll"><div class="mk-note">${noteBody(n)}</div></div>`
+      + (S.mode === "edit" ? M.toolbar({ active: S.sel ? ["italic"] : [], disabled: S.titleFocus }) + M.keyboard() : "")
+      + menuHtml(n) + snack("phone");
+    if (S.dialog) overlay = `<div class="mk-scrim" data-act="cancel-scrim">${M.deleteDialog(n)}</div>`;
+  } else if (S.screen === "search") {
+    inner = M.appbarSearch({ q: S.q }) + `<div class="mk-scroll${resultsCentered() ? " mk-center" : ""}" id="mk-results">${results(false)}</div>` + (S.kb ? M.keyboard() : "");
+  } else {
+    inner = M.appbarList()
+      + (db.length
+        ? `<div class="mk-list-search">${M.field({ act: "search" })}</div><div class="mk-scroll">${listSections(n2 => M.row({ n: n2, isNew: n2.id === S.flashId }))}</div>`
+        : `<div class="mk-scroll mk-center">${M.EMPTY.notes()}</div>`)
+      + M.bottombar() + snack("bar");
+  }
+  return M.phone(inner, { overlay });
+}
+
+function desktop() {
+  const id = deskId(), n = db.find(x => x.id === id);
+  let side;
+  if (S.screen === "search") {
+    side = `<aside class="mk-sidebar"><div class="mk-sidebar__head mk-sidebar__head--search">${M.iconBtn({ icon: "back", label: "Close search", attrs: 'data-act="back"' })}${M.field({ input: true, value: S.q })}</div><div class="mk-sidebar__list${resultsCentered() ? " mk-center" : ""}" id="mk-results">${results(true)}</div></aside>`;
+  } else {
+    side = `<aside class="mk-sidebar"><div class="mk-sidebar__head"><span class="mk-sidebar__title">Notes</span>${M.iconBtn({ icon: "import", label: "Import .md file", attrs: 'data-act="import"' })}${M.iconBtn({ icon: "plus", label: "New note", attrs: 'data-act="new"' })}</div>`
+      + (db.length
+        ? `<div class="mk-sidebar__search">${M.field({ act: "search", kbd: "Ctrl F" })}</div><div class="mk-sidebar__list">${listSections(x => M.row({ n: x, desk: true, selected: x.id === id, isNew: x.id === S.flashId }))}</div>`
+        : `<div class="mk-sidebar__list mk-center">${M.empty({ size: "s", glyph: "#", title: "No notes yet", body: "New and imported notes appear here." })}</div>`)
+      + `</aside>`;
+  }
+  let pane;
+  if (!n) {
+    pane = `<section class="mk-pane"><div class="mk-pane__body mk-center">${db.length ? M.EMPTY.noNote() : M.EMPTY.notes({ desk: true })}</div>${snack("desk")}</section>`;
+  } else {
+    const bar = `<div class="mk-pane__bar">${M.seg({ sel: S.mode === "edit" ? "Edit" : "Preview" })}<span class="mk-spacer"></span>${M.iconBtn({ icon: "pin", label: n.pinned ? "Unpin" : "Pin to top", on: n.pinned, attrs: 'data-act="pin"' })}${M.iconBtn({ icon: "more", label: "More actions", state: S.menu ? "pressed" : undefined, attrs: 'data-act="menu" aria-haspopup="menu"' })}</div>`;
+    const tb = S.mode === "edit" ? M.toolbar({ top: true, active: S.sel ? ["italic"] : [], disabled: S.titleFocus }) : "";
+    pane = `<section class="mk-pane">${bar}<div class="mk-pane__body">${tb}<div class="mk-pane__col">${noteBody(n)}</div></div>${menuHtml(n)}${snack("desk")}</section>`;
+  }
+  const overlay = S.dialog && n ? `<div class="mk-scrim" data-act="cancel-scrim">${M.deleteDialog(n)}</div>` : "";
+  return M.desktop(side + pane, { overlay });
+}
+
+function fit() {
+  const dev = stage.querySelector(".dev"); if (!dev) return;
+  dev.style.zoom = "";
+  const cs = getComputedStyle(stage);
+  const avail = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const z = Math.min(1, avail / +dev.dataset.w);
+  if (z < 1) dev.style.zoom = z.toFixed(3);
+}
+
+function draw() {
+  stage.innerHTML = platform === "desktop" ? desktop() : phone();
+  fit();
+  if (focusSearch) { const q = stage.querySelector("#mk-q"); if (q) { q.focus({ preventScroll: true }); const v = q.value; q.setSelectionRange(v.length, v.length); } focusSearch = false; }
+  clearTimeout(snackTimer);
+  if (S.snack && !S.snack.sticky) { const s = S.snack; snackTimer = setTimeout(() => { if (S.snack === s) { S.snack = null; draw(); } }, 4000); }
+}
+function updateResults() {
+  const el = stage.querySelector("#mk-results"); if (!el) return;
+  el.innerHTML = results(platform === "desktop");
+  el.classList.toggle("mk-center", resultsCentered());
+}
+
+function renderNav() {
+  nav.innerHTML = Object.entries(G).map(([g, [label, icon]]) => `<div><h4>${M.icon(icon)}${label}</h4>${V.filter(v => v.g === g).map(v => `<button type="button" data-variant="${v.id}"${v.id === current ? ' aria-current="true"' : ""}>${v.name}</button>`).join("")}</div>`).join("");
+}
+function renderInfo() {
+  const v = V.find(x => x.id === current); if (!v) return;
+  info.innerHTML = `<div class="doc-eyebrow">${G[v.g][0]} · ${platform === "desktop" ? "Desktop" : "Phone"}</div><h2>${v.name}</h2><p>${v.desc}</p>`
+    + (platform === "desktop" && v.desk ? `<p>${v.desk}</p>` : "")
+    + (v.tries.length ? `<h3>Try it</h3><ul>${v.tries.map(t => `<li>${t}</li>`).join("")}</ul>` : "")
+    + `<h3>Built from</h3><div class="proto-chips">${v.uses.map(u => `<span>${u}</span>`).join("")}</div>`
+    + `<div class="proto-reset">${M.btn({ v: "secondary", label: "Reset this state", attrs: 'data-reset="1"' })}</div>`;
+  info.classList.add("mk");
+}
+function go(id) {
+  const v = V.find(x => x.id === id) || V[0];
+  current = v.id; v.set(); focusSearch = v.id === "search-start";
+  renderNav(); renderInfo(); draw();
+}
+
+nav.addEventListener("click", e => {
+  const b = e.target.closest("[data-variant]"); if (!b) return;
+  if (location.hash === "#" + b.dataset.variant) go(b.dataset.variant); else location.hash = b.dataset.variant;
+});
+info.addEventListener("click", e => { if (e.target.closest("[data-reset]")) go(current); });
+addEventListener("hashchange", () => go(location.hash.slice(1)));
+addEventListener("resize", fit);
+
+/* ---------- interactions inside the device ---------- */
+function doImport() {
+  const x = M.IMPORTED(); x.id = nextId++; db.push(x);
+  S.screen = "list"; S.flashId = x.id; S.snack = null; S.menu = false;
+}
+stage.addEventListener("click", e => {
+  const a = e.target.closest("[data-act]"); if (!a) return;
+  const act = a.dataset.act;
+  if (act === "cancel-scrim" && e.target !== a) return;
+  if (act !== "import" && act !== "snack-action") S.flashId = null;
+  const n = note();
+  let redraw = true;
+  switch (act) {
+    case "open":
+      S.id = +a.dataset.id; S.mode = "preview"; S.menu = false; S.sel = false; S.titleFocus = false; S.caret = null; S.snack = null;
+      if (!(platform === "desktop" && S.screen === "search")) S.screen = "note";
+      break;
+    case "back": S.screen = "list"; S.menu = false; S.snack = null; S.kb = false; if (platform === "phone") S.id = null; break;
+    case "search": S.screen = "search"; S.q = ""; S.kb = true; S.menu = false; S.snack = null; focusSearch = true; break;
+    case "mode":
+      S.mode = a.dataset.val === "edit" ? "edit" : "preview"; S.sel = false; S.titleFocus = false; S.caret = null; S.menu = false;
+      if (platform === "phone") S.screen = "note";
+      break;
+    case "pin": if (n) n.pinned = !n.pinned; S.menu = false; break;
+    case "menu": S.menu = !S.menu; break;
+    case "close-menu": S.menu = false; break;
+    case "export": S.menu = false; if (n) S.snack = { msg: `Exported “${M.esc(n.title || "Untitled")}.md”` }; break;
+    case "ask-delete": S.menu = false; S.dialog = true; break;
+    case "cancel": case "cancel-scrim": S.dialog = false; break;
+    case "delete":
+      if (n) db = db.filter(x => x.id !== n.id);
+      S.dialog = false; S.screen = "list"; S.id = null; S.mode = "preview"; S.snack = { msg: "Note deleted" };
+      break;
+    case "new": {
+      const x = { id: nextId++, title: "", body: "", age: 0, pinned: false }; db.push(x);
+      Object.assign(S, { screen: "note", id: x.id, mode: "edit", titleFocus: true, menu: false, snack: null, sel: false, caret: null });
+      break;
+    }
+    case "import": doImport(); break;
+    case "snack-action": if (S.snack && S.snack.kind === "import-error") doImport(); else S.snack = null; break;
+    case "task": {
+      if (!n) break;
+      const L = n.body.split("\n"), i = +a.dataset.line;
+      L[i] = L[i].replace(/\[( |x)\]/, m => m === "[ ]" ? "[x]" : "[ ]"); n.body = L.join("\n"); n.age = 0;
+      break;
+    }
+    case "copy": {
+      redraw = false;
+      const code = a.closest(".mk-code").querySelector("code").innerText;
+      const done = () => { a.classList.add("is-copied"); a.innerHTML = M.icon("check") + "<span>Copied</span>"; setTimeout(() => { a.classList.remove("is-copied"); a.innerHTML = M.icon("copy") + "<span>Copy</span>"; }, 1500); };
+      try { navigator.clipboard.writeText(code).then(done, done); } catch (err) { done(); }
+      break;
+    }
+    case "clear-q": { S.q = ""; const q = stage.querySelector("#mk-q"); if (q) { q.value = ""; q.focus(); } updateResults(); redraw = false; break; }
+    default: redraw = false;
+  }
+  if (redraw) draw();
+});
+stage.addEventListener("input", e => { if (e.target.id === "mk-q") { S.q = e.target.value; updateResults(); } });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (S.dialog) { S.dialog = false; draw(); }
+  else if (S.menu) { S.menu = false; draw(); }
+  else if (S.screen === "search") { S.screen = "list"; S.kb = false; draw(); }
+});
+
+/* ---------- boot ---------- */
+document.querySelectorAll("[data-plat]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.plat === platform)));
+go(location.hash.slice(1));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>

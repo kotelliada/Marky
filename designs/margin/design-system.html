@@ -1,0 +1,594 @@
+<title>Marky Design System</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400;1,600&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="docs.css">
+
+<header class="doc-top">
+  <div class="doc-top__in">
+    <div class="doc-brand"><b>Marky · Margin</b><span>Design system v1.0 · 23 Nov 2026</span></div>
+    <div class="doc-ctrl"><span id="theme-label">Theme</span><div class="doc-seg" id="theme" role="group" aria-labelledby="theme-label"><button type="button" data-theme-set="system">System</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+    <a class="doc-link" id="proto-link" href="https://claude.ai/artifact/LwUWpFkrfnARzs2AvoRmVt" target="_blank" rel="noopener">Open the prototype<svg class="mk-ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</header>
+
+<div class="doc-layout">
+  <nav class="doc-nav" id="nav" aria-label="Sections">
+    <h4>Foundations</h4>
+    <a href="#overview">Overview</a>
+    <a href="#typography">Typography</a>
+    <a href="#color">Color</a>
+    <a href="#layout">Spacing, radius, motion</a>
+    <a href="#icons">Iconography</a>
+    <h4>Components</h4>
+    <a href="#c-buttons">Buttons</a>
+    <a href="#c-iconbuttons">Icon buttons</a>
+    <a href="#c-segmented">Segmented control</a>
+    <a href="#c-fields">Search and title fields</a>
+    <a href="#c-rows">Note rows</a>
+    <a href="#c-results">Search results</a>
+    <a href="#c-checklist">Checklist item</a>
+    <a href="#c-toolbar">Formatting toolbar</a>
+    <a href="#c-menu">Menu</a>
+    <a href="#c-dialog">Dialog</a>
+    <a href="#c-snackbar">Snackbar</a>
+    <a href="#c-empty">Empty states</a>
+    <a href="#c-tooltip">Tooltip and shortcuts</a>
+    <a href="#c-bars">App bars and layout</a>
+    <a href="#c-markdown">Markdown nodes</a>
+    <h4>Guidance</h4>
+    <a href="#platforms">Platforms and Compose</a>
+    <a href="#content">Writing for Marky</a>
+  </nav>
+
+  <main class="doc-main">
+    <section class="doc-hero" id="overview">
+      <div class="doc-eyebrow">Marky · local-first Markdown notes · Android, iOS, Desktop</div>
+      <h1><span class="doc-mark">#</span>Margin design system</h1>
+      <p class="doc-lede">Everything Marky's screens are built from: two typefaces, one cobalt accent, hairlines instead of cards, and a set of components with every state they can be in. Each component below is shown in light and dark. The prototype uses these same files, so a change here shows up there.</p>
+      <p class="doc-lede">Source files: <code class="doc-code">tokens.css</code> (all values), <code class="doc-code">components.css</code> (component styles), <code class="doc-code">marky.js</code> (component markup, Markdown renderer, sample notes). Sizes in px map 1:1 to dp on Android and pt on iOS.</p>
+      <div class="doc-principles">
+        <div><b>Syntax stays in sight</b><span>Preview keeps heading markers faintly in view. Edit mode tints Markdown syntax in the accent, so the two modes read as one document.</span></div>
+        <div><b>Hairlines, not cards</b><span>Rows are separated by 1 px borders. Only things that float above the page (menus, dialogs, snackbars) get a shadow.</span></div>
+        <div><b>One accent</b><span>Cobalt marks what is interactive, selected or pinned. Red appears only when something is about to be deleted.</span></div>
+        <div><b>Mono means machine</b><span>Timestamps, labels, code and raw Markdown use Plex Mono. Anything a person wrote or reads as prose uses Plex Sans.</span></div>
+      </div>
+    </section>
+
+    <!-- ================= TYPOGRAPHY ================= -->
+    <section class="doc-sec" id="typography">
+      <h2>Typography</h2>
+      <p>Two families from IBM Plex, both under the SIL Open Font License 1.1. Plex ships more weights (Thin 100 to Bold 700); Marky uses only the styles listed here, so only these files go into the app.</p>
+      <div class="doc-fonts">
+        <div class="doc-font">
+          <div class="doc-font__name">IBM Plex Sans</div>
+          <div class="doc-font__role">Interface and reading text: titles, note body in preview, buttons, menus.</div>
+          <div class="doc-font__style"><span style="font-weight:400">Writing comes first.</span><span>Regular 400</span></div>
+          <div class="doc-font__style"><span style="font-weight:400;font-style:italic">Writing comes first.</span><span>Italic 400</span></div>
+          <div class="doc-font__style"><span style="font-weight:500">Writing comes first.</span><span>Medium 500</span></div>
+          <div class="doc-font__style"><span style="font-weight:600">Writing comes first.</span><span>SemiBold 600</span></div>
+          <div class="doc-font__style"><span style="font-weight:600;font-style:italic">Writing comes first.</span><span>SemiBold Italic 600</span></div>
+          <div class="doc-font__meta">Files: IBMPlexSans-Regular, -Italic, -Medium, -SemiBold, -SemiBoldItalic (.ttf)<br>Fallback: system-ui, -apple-system, Segoe UI, Roboto, sans-serif<br>Italic 400 and SemiBold Italic render *italic* and ***bold italic*** in preview.</div>
+        </div>
+        <div class="doc-font">
+          <div class="doc-font__name" style="font-family:var(--mk-font-mono)">IBM Plex Mono</div>
+          <div class="doc-font__role">Raw Markdown in edit mode, code, timestamps, section labels, segmented control.</div>
+          <div class="doc-font__style" style="font-family:var(--mk-font-mono)"><span style="font-weight:400;font-size:18px">## To sort</span><span>Regular 400</span></div>
+          <div class="doc-font__style" style="font-family:var(--mk-font-mono)"><span style="font-weight:400;font-style:italic;font-size:18px">*Príncipe Real*</span><span>Italic 400</span></div>
+          <div class="doc-font__style" style="font-family:var(--mk-font-mono)"><span style="font-weight:500;font-size:18px">PINNED · 3h</span><span>Medium 500</span></div>
+          <div class="doc-font__style" style="font-family:var(--mk-font-mono)"><span style="font-weight:600;font-size:18px">**12 Dec**</span><span>SemiBold 600</span></div>
+          <div class="doc-font__meta">Files: IBMPlexMono-Regular, -Italic, -Medium, -SemiBold (.ttf)<br>Fallback: ui-monospace, SF Mono, Menlo, Consolas, monospace<br>SemiBold shows **bold** and heading lines in the editor.</div>
+        </div>
+      </div>
+      <div class="doc-sub">
+        <h3>Type scale</h3>
+        <p>Fourteen styles. Values below are read from the live CSS, so they always match <code class="doc-code">tokens.css</code>. Font sizes are sp on Android.</p>
+        <div class="doc-table-wrap"><table class="doc-table" id="type-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ================= COLOR ================= -->
+    <section class="doc-sec" id="color">
+      <h2>Color</h2>
+      <p>Cool slate neutrals with a slight blue bias, one cobalt accent, and red reserved for deletion. Light follows the system setting; dark is designed separately, not inverted. Contrast is measured against the surface the token is used on; text tokens meet WCAG AA (4.5:1) in both themes.</p>
+      <div class="doc-table-wrap"><table class="doc-table" id="color-table"></table></div>
+      <p class="doc-lede" style="font-size:14px">Eight-digit hex values carry alpha (last two digits). State layers are painted over whatever surface is underneath, which is why they are translucent.</p>
+    </section>
+
+    <!-- ================= LAYOUT ================= -->
+    <section class="doc-sec" id="layout">
+      <h2>Spacing, radius, motion</h2>
+      <div class="doc-sub"><h3>Spacing</h3><p>A 4 px grid. Screen gutters are 20 on phones and 40 on desktop.</p><div class="doc-table-wrap"><table class="doc-table" id="space-table"></table></div></div>
+      <div class="doc-sub"><h3>Radius</h3><p>Small radii keep the hairline look precise. Nothing in Marky is fully rounded.</p><div class="doc-table-wrap"><table class="doc-table" id="radius-table"></table></div></div>
+      <div class="doc-sub"><h3>Elevation</h3><p>One shadow, for floating elements only. In dark, floating surfaces also step up to <code class="doc-code">--mk-float</code> so they separate from the page.</p><div data-demo="elevation"></div></div>
+      <div class="doc-sub"><h3>Motion</h3><p>Short and functional. Every animation is removed when the system asks for reduced motion.</p><div class="doc-table-wrap"><table class="doc-table" id="motion-table"></table></div></div>
+      <div class="doc-sub"><h3>Sizes</h3><div class="doc-table-wrap"><table class="doc-table" id="size-table"></table></div></div>
+    </section>
+
+    <!-- ================= ICONS ================= -->
+    <section class="doc-sec" id="icons">
+      <h2>Iconography</h2>
+      <p>Line icons on a 24 px grid, 1.75 px stroke, round caps and joins, drawn at 20 px (16 px inside rows and fields). Icons take their color from the text around them: text-2 at rest, text on hover, accent when on. The pin is the only icon with a filled state.</p>
+      <div class="doc-icons" id="icon-grid"></div>
+    </section>
+
+    <!-- ================= COMPONENTS ================= -->
+    <section class="doc-sec" id="components">
+      <h2>Components</h2>
+      <p>Every component with every state it can take. Hover exists on desktop only; phones go straight from default to pressed. Focused shows the keyboard focus ring, which matters on desktop and for hardware keyboards on tablets.</p>
+
+      <div class="doc-sub" id="c-buttons"><h3>Buttons</h3>
+        <p>Four variants. Use one primary button per screen. Danger appears only inside the delete confirmation.</p>
+        <dl class="doc-spec"><dt>Height</dt><dd>L 44 (bottom bar), M 36 (dialogs, empty states, desktop)</dd><dt>Padding</dt><dd>18 / 14 horizontal, 8 gap to an 18 px icon</dd><dt>Shape</dt><dd>radius-md (8), 1 px border on secondary</dd><dt>Type</dt><dd>label-l (L), label-m (M); primary and danger use 600</dd><dt>Disabled</dt><dd>Filled variants turn surface-2 with text-disabled; outlined keep the border at border</dd></dl>
+        <div data-demo="buttons"></div><div data-demo="button-sizes"></div>
+      </div>
+
+      <div class="doc-sub" id="c-iconbuttons"><h3>Icon buttons</h3>
+        <p>40 × 40 visual with a 48 × 48 touch target. Always carry an accessible label, shown as a tooltip on desktop.</p>
+        <dl class="doc-spec"><dt>Icon</dt><dd>20 px, text-2 at rest, text on hover and press</dd><dt>On</dt><dd>accent color plus filled glyph, used for Pin</dd><dt>States</dt><dd>state-hover and state-pressed layers, radius-md</dd></dl>
+        <div data-demo="iconbuttons"></div>
+      </div>
+
+      <div class="doc-sub" id="c-segmented"><h3>Segmented control</h3>
+        <p>Switches a note between Edit and Preview. Desktop adds Split for wide windows (an optional extra; the spec only requires the two modes).</p>
+        <dl class="doc-spec"><dt>Container</dt><dd>1 px border, radius-md, 2 px padding</dd><dt>Option</dt><dd>control type (Plex Mono 500 12/16), 6 × 10 padding, radius-sm</dd><dt>Selected</dt><dd>surface-2 fill, text color</dd></dl>
+        <div data-demo="segmented"></div>
+      </div>
+
+      <div class="doc-sub" id="c-fields"><h3>Search and title fields</h3>
+        <p>The search field opens the Search screen from the notes list and takes input on the Search screen. The title field edits the note title in place, with no visible box.</p>
+        <dl class="doc-spec"><dt>Search</dt><dd>40 high, radius-md, 1 px border, 18 px icon, body-l text; focus adds an accent border and a 3 px accent-soft halo; a clear button appears once there is text</dd><dt>Title</dt><dd>title-l, no border; empty shows “Untitled” in text-3</dd></dl>
+        <div data-demo="fields"></div>
+      </div>
+
+      <div class="doc-sub" id="c-rows"><h3>Note rows</h3>
+        <p>One row per note: title, time since the last edit, a two-line preview of the text without Markdown syntax, and a pin indicator. Sorted pinned first, then by last edited.</p>
+        <dl class="doc-spec"><dt>Phone</dt><dd>min 72 high, 12 / 20 padding, hairline on top; preview clamps at 2 lines</dd><dt>Desktop</dt><dd>radius-md, 10 / 12 padding, no hairline; preview clamps at 1 line; selected uses accent-soft</dd><dt>Title</dt><dd>title-s, one line, ellipsis; empty title shows “Untitled” in text-3</dd><dt>Time</dt><dd>caption, text-3, tabular numerals: Now, 12m, 3h, Yesterday, 4d, 2w, then a date (12 Oct)</dd><dt>Just imported</dt><dd>accent-soft highlight that fades over 2.4 s</dd></dl>
+        <div data-demo="rows"></div><div data-demo="rows-desk"></div>
+      </div>
+
+      <div class="doc-sub" id="c-results"><h3>Search results</h3>
+        <p>Same row, with every matched word highlighted in the title and in a snippet taken from around the first match. Title matches come first, then text matches, each group by last edited.</p>
+        <div data-demo="results"></div>
+      </div>
+
+      <div class="doc-sub" id="c-checklist"><h3>Checklist item</h3>
+        <p>A Markdown task (<code class="doc-code">- [ ]</code>). Tickable in preview, where it writes <code class="doc-code">[x]</code> back into the source. Checked items stay fully readable; they dim to text-2 rather than being struck through.</p>
+        <dl class="doc-spec"><dt>Box</dt><dd>18 px, 1.5 px text-3 border, radius-xs; checked fills accent with a 12 px on-accent check</dd><dt>Target</dt><dd>The whole line is the touch target</dd><dt>Disabled</dt><dd>Read-only contexts, such as search snippets and exported previews</dd></dl>
+        <div data-demo="checklist"></div>
+      </div>
+
+      <div class="doc-sub" id="c-toolbar"><h3>Formatting toolbar</h3>
+        <p>Inserts the same Markdown a person could type and wraps the selection where that applies. Three groups: inline styles, lists, other blocks. Sits above the keyboard on phones and at the top of the editor on desktop.</p>
+        <dl class="doc-spec"><dt>Bar</dt><dd>48 high, surface fill, hairline on the keyboard side, scrolls sideways if it runs out of room</dd><dt>Tool</dt><dd>36 × 36, radius-sm, 20 px icon in text color</dd><dt>Active</dt><dd>The selection already has this format: accent-soft fill, accent icon</dd><dt>Disabled</dt><dd>While the title field has focus, since formatting applies to the body only</dd></dl>
+        <div data-demo="toolbar"></div><div data-demo="tools"></div>
+      </div>
+
+      <div class="doc-sub" id="c-menu"><h3>Menu</h3>
+        <p>The note's More actions menu: Pin or Unpin, Export as .md, Delete note. The destructive action sits last, below a separator.</p>
+        <dl class="doc-spec"><dt>Surface</dt><dd>float fill, 1 px border, radius-lg, shadow-float, min width 216, 6 px padding</dd><dt>Item</dt><dd>40 high, 20 px icon in text-2, label-m</dd><dt>Danger</dt><dd>danger color for icon and label; danger-soft on hover and press</dd></dl>
+        <div data-demo="menu"></div><div data-demo="menu-items"></div>
+      </div>
+
+      <div class="doc-sub" id="c-dialog"><h3>Dialog</h3>
+        <p>Only one dialog exists: delete confirmation. It names the note so nobody deletes the wrong one.</p>
+        <dl class="doc-spec"><dt>Surface</dt><dd>float fill, radius-lg, 20 padding, max width 320, shadow-float, over the scrim</dd><dt>Content</dt><dd>title-m title with the note name in curly quotes; body-m body in text-2</dd><dt>Actions</dt><dd>Right aligned: Cancel (secondary), Delete (danger). Esc and tapping the scrim cancel.</dd></dl>
+        <div data-demo="dialog"></div>
+      </div>
+
+      <div class="doc-sub" id="c-snackbar"><h3>Snackbar</h3>
+        <p>Short feedback that does not block. Used for failed imports, finished exports and deletions.</p>
+        <dl class="doc-spec"><dt>Surface</dt><dd>inverse fill, on-inverse body-s text, radius-md, min 48 high</dd><dt>Action</dt><dd>Optional, inverse-accent label, 600</dd><dt>Placement</dt><dd>Phone: 12 above the bottom bar or screen edge. Desktop: bottom left of the note pane, max 440 wide.</dd><dt>Timing</dt><dd>4 s, errors 6 s; stays while hovered or focused</dd></dl>
+        <div data-demo="snackbar"></div>
+      </div>
+
+      <div class="doc-sub" id="c-empty"><h3>Empty states</h3>
+        <p>Each empty screen says what is missing and what to do next. The glyph is a Markdown or keyboard character in a dashed frame, in keeping with the syntax-first look.</p>
+        <dl class="doc-spec"><dt>Glyph</dt><dd>56 px frame, 1 px dashed border-strong, radius-lg, Plex Mono 24</dd><dt>Text</dt><dd>title-m title, body-m body in text-2, max 300 wide, centered</dd><dt>Small</dt><dd>40 px glyph, title-s, body-s; for the desktop sidebar</dd></dl>
+        <div data-demo="empty"></div>
+      </div>
+
+      <div class="doc-sub" id="c-tooltip"><h3>Tooltip and shortcuts</h3>
+        <p>Desktop only. Appears after 500 ms of hover or on keyboard focus, and shows the shortcut when there is one. On macOS, Ctrl reads as ⌘.</p>
+        <div data-demo="tooltip"></div>
+      </div>
+
+      <div class="doc-sub" id="c-bars"><h3>App bars and layout</h3>
+        <p>56 high on every screen. The hairline under the bar appears only once content scrolls beneath it. On desktop, a 320 sidebar holds the list or the search results and the note sits in a column at most 680 wide.</p>
+        <div data-demo="bars"></div>
+      </div>
+
+      <div class="doc-sub" id="c-markdown"><h3>Markdown nodes</h3>
+        <p>Every node the preview renders, with its source as it appears in edit mode. Preview follows the page theme; switch the theme at the top to check dark.</p>
+        <div data-demo="nodes"></div>
+        <div data-demo="node-states"></div>
+      </div>
+    </section>
+
+    <!-- ================= PLATFORMS ================= -->
+    <section class="doc-sec" id="platforms">
+      <h2>Platforms and Compose</h2>
+      <p>One shared Compose Multiplatform UI. These are the places where Android, iOS and Desktop deliberately differ.</p>
+      <div class="doc-table-wrap"><table class="doc-table">
+        <thead><tr><th></th><th>Android</th><th>iOS</th><th>Desktop (JVM)</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Reference frame</td><td>360 × 780 dp</td><td>390 × 844 pt</td><td>1120 × 720, minimum 960 × 600</td></tr>
+          <tr><td class="mono">Back</td><td>System back gesture and app bar back</td><td>Edge swipe and app bar back</td><td>Esc and app bar back</td></tr>
+          <tr><td class="mono">Hover states</td><td>No</td><td>No (yes with a pointer on iPad)</td><td>Yes</td></tr>
+          <tr><td class="mono">Formatting toolbar</td><td>Above the keyboard</td><td>Above the keyboard</td><td>Top of the editor, sticky</td></tr>
+          <tr><td class="mono">Import .md</td><td>System file picker, .md filter</td><td>Files document picker</td><td>Native open dialog</td></tr>
+          <tr><td class="mono">Export .md</td><td>Create-document picker</td><td>Save to Files</td><td>Native save dialog</td></tr>
+          <tr><td class="mono">Snackbar</td><td>Above the bottom bar</td><td>Above the bottom bar</td><td>Bottom left of the note pane</td></tr>
+          <tr><td class="mono">Shortcuts</td><td>With a hardware keyboard</td><td>With a hardware keyboard</td><td>Always; shown in tooltips</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="doc-sub"><h3>Keyboard shortcuts</h3>
+        <div class="doc-table-wrap"><table class="doc-table">
+          <thead><tr><th>Action</th><th>Windows, Linux</th><th>macOS</th></tr></thead>
+          <tbody>
+            <tr><td>New note</td><td class="mono">Ctrl N</td><td class="mono">⌘N</td></tr>
+            <tr><td>Search notes</td><td class="mono">Ctrl F</td><td class="mono">⌘F</td></tr>
+            <tr><td>Import .md file</td><td class="mono">Ctrl O</td><td class="mono">⌘O</td></tr>
+            <tr><td>Switch Edit and Preview</td><td class="mono">Ctrl E</td><td class="mono">⌘E</td></tr>
+            <tr><td>Export as .md</td><td class="mono">Ctrl Shift S</td><td class="mono">⇧⌘S</td></tr>
+            <tr><td>Pin or unpin</td><td class="mono">Ctrl Shift P</td><td class="mono">⇧⌘P</td></tr>
+            <tr><td>Delete note (asks first)</td><td class="mono">Ctrl Backspace</td><td class="mono">⌘⌫</td></tr>
+            <tr><td>Bold, Italic, Link</td><td class="mono">Ctrl B, Ctrl I, Ctrl K</td><td class="mono">⌘B, ⌘I, ⌘K</td></tr>
+            <tr><td>Close search, menu or dialog</td><td class="mono">Esc</td><td class="mono">Esc</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="doc-sub"><h3>Mapping to Compose</h3>
+        <p>Build the theme on Material 3 and map Margin's tokens onto its color scheme, so stock components pick up the right colors. Tokens without a Material slot live in a <code class="doc-code">MarkyColors</code> object provided through a CompositionLocal.</p>
+        <div class="doc-table-wrap"><table class="doc-table">
+          <thead><tr><th>Margin token</th><th>Material 3 slot</th><th>Margin token</th><th>Material 3 slot</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">accent</td><td class="mono">primary</td><td class="mono">bg</td><td class="mono">background, surface</td></tr>
+            <tr><td class="mono">on-accent</td><td class="mono">onPrimary</td><td class="mono">surface</td><td class="mono">surfaceContainer</td></tr>
+            <tr><td class="mono">accent-soft</td><td class="mono">primaryContainer</td><td class="mono">surface-2</td><td class="mono">surfaceContainerHigh</td></tr>
+            <tr><td class="mono">on-accent-soft</td><td class="mono">onPrimaryContainer</td><td class="mono">float</td><td class="mono">surfaceContainerHighest</td></tr>
+            <tr><td class="mono">text</td><td class="mono">onBackground, onSurface</td><td class="mono">border</td><td class="mono">outlineVariant</td></tr>
+            <tr><td class="mono">text-2</td><td class="mono">onSurfaceVariant</td><td class="mono">border-strong</td><td class="mono">outline</td></tr>
+            <tr><td class="mono">danger</td><td class="mono">error</td><td class="mono">inverse</td><td class="mono">inverseSurface</td></tr>
+            <tr><td class="mono">on-danger</td><td class="mono">onError</td><td class="mono">on-inverse</td><td class="mono">inverseOnSurface</td></tr>
+            <tr><td class="mono">danger-soft</td><td class="mono">errorContainer</td><td class="mono">inverse-accent</td><td class="mono">inversePrimary</td></tr>
+            <tr><td class="mono">scrim</td><td class="mono">scrim</td><td class="mono">text-3, marker, highlight, code-*</td><td class="mono">MarkyColors</td></tr>
+          </tbody>
+        </table></div>
+        <p>Type styles become a <code class="doc-code">MarkyTypography</code> of <code class="doc-code">TextStyle</code>s with <code class="doc-code">FontFamily</code>s loaded from the Plex .ttf files in <code class="doc-code">composeResources/font</code>. Icons become <code class="doc-code">ImageVector</code>s in a <code class="doc-code">MarkyIcons</code> object; spacing, radius and sizes go into <code class="doc-code">MarkyDimens</code>.</p>
+      </div>
+    </section>
+
+    <!-- ================= CONTENT ================= -->
+    <section class="doc-sec" id="content">
+      <h2>Writing for Marky</h2>
+      <p>Plain, short and specific. Name things the way people already do. Every message says what happened and, if something went wrong, what to do next.</p>
+      <div class="doc-table-wrap"><table class="doc-table">
+        <thead><tr><th>Situation</th><th>Copy</th></tr></thead>
+        <tbody>
+          <tr><td class="muted">Primary action on the list</td><td>New note</td></tr>
+          <tr><td class="muted">Import button label and tooltip</td><td>Import .md file</td></tr>
+          <tr><td class="muted">Note menu</td><td>Pin to top · Unpin · Export as .md · Delete note</td></tr>
+          <tr><td class="muted">Delete confirmation</td><td>Delete “Lisbon trip”? The note is removed from this device. This can’t be undone. [Cancel] [Delete]</td></tr>
+          <tr><td class="muted">Import failed</td><td>Couldn’t import “scan.pdf”. Choose a Markdown (.md) file. [Choose file]</td></tr>
+          <tr><td class="muted">Export finished</td><td>Exported “Lisbon trip.md”</td></tr>
+          <tr><td class="muted">After deleting</td><td>Note deleted</td></tr>
+          <tr><td class="muted">Empty title</td><td>Untitled</td></tr>
+          <tr><td class="muted">Empty body in edit mode</td><td>Write in Markdown…</td></tr>
+          <tr><td class="muted">Note meta</td><td>Edited 3 h ago · 41 words</td></tr>
+        </tbody>
+      </table></div>
+      <p>Note names in messages always sit in curly quotes. Time since the last edit uses the compact form in rows (Now, 12m, 3h, Yesterday, 4d, 2w, 12 Oct) and the long form in note meta (just now, 12 min ago, 3 h ago, yesterday, 4 days ago, on 12 Oct).</p>
+    </section>
+  </main>
+</div>
+
+<div class="theme-light" id="probe-l" hidden></div>
+<div class="theme-dark" id="probe-d" hidden></div>
+
+<script src="marky.js"></script>
+<script>
+(function () {
+"use strict";
+const M = window.Marky, $ = s => document.querySelector(s);
+
+/* ---------- theme control ---------- */
+const root = document.documentElement;
+function setTheme(t, save) {
+  if (t === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
+  document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
+  if (save) { try { localStorage.setItem("mk-theme", t); } catch (e) {} }
+}
+let saved = null; try { saved = localStorage.getItem("mk-theme"); } catch (e) {}
+setTheme(saved || root.getAttribute("data-theme") || "system");
+$("#theme").addEventListener("click", e => { const b = e.target.closest("[data-theme-set]"); if (b) setTheme(b.dataset.themeSet, true); });
+
+/* ---------- helpers ---------- */
+const pl = $("#probe-l"), pd = $("#probe-d");
+const tok = (el, n) => getComputedStyle(el).getPropertyValue("--mk-" + n).trim();
+const rootTok = n => getComputedStyle(root).getPropertyValue("--mk-" + n).trim();
+function rgb(h) {
+  h = h.replace("#", "").trim();
+  if (h.length === 3) h = h.split("").map(c => c + c).join("");
+  if (h.length === 8) { if (h.slice(6).toLowerCase() !== "ff") return null; h = h.slice(0, 6); }
+  if (h.length !== 6) return null;
+  return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+}
+const lum = c => { const [r, g, b] = c.map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+function ratio(a, b) { const A = rgb(a), B = rgb(b); if (!A || !B) return null; const x = lum(A), y = lum(B); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); }
+function pill(r, decorative) {
+  if (r == null) return "";
+  const v = r.toFixed(1) + ":1";
+  if (r >= 4.5) return `<span class="doc-pill">${v} AA</span>`;
+  if (r >= 3) return `<span class="doc-pill">${v} UI / large</span>`;
+  return `<span class="doc-pill${decorative ? "" : " doc-pill--fail"}">${v}${decorative ? " decorative" : ""}</span>`;
+}
+const STATE_LABEL = { default: "Default", hover: "Hover", pressed: "Pressed", focus: "Focused", disabled: "Disabled", on: "On", active: "Active", checked: "Checked" };
+function panels(html, { stack } = {}) {
+  return `<div class="doc-demo${stack ? " doc-demo--stack" : ""}"><div class="doc-panel theme-light mk"><div class="doc-panel__tag">Light</div>${html}</div><div class="doc-panel theme-dark mk"><div class="doc-panel__tag">Dark</div>${html}</div></div>`;
+}
+function matrix(rows, cols, fn) {
+  return `<div class="doc-scroll"><table class="doc-matrix"><thead><tr><th></th>${cols.map(c => `<th>${STATE_LABEL[c] || c}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr><th>${r}</th>${cols.map(c => `<td>${fn(r, c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function cells(items, top) {
+  return `<div class="doc-grid${top ? " doc-grid--top" : ""}">${items.map(([label, html, kind]) => `<div class="doc-cell${kind ? " doc-cell--" + kind : ""}"><div class="doc-cell__ui">${html}</div><div class="doc-cell__label">${label}</div></div>`).join("")}</div>`;
+}
+const box = (html, w = 300) => `<div style="width:${w}px;max-width:100%">${html}</div>`;
+const SAMPLE = M.SAMPLE();
+const byId = id => SAMPLE.find(n => n.id === id);
+
+/* ---------- type table ---------- */
+const TYPE = [
+  ["display", "Notes", "Screen titles"],
+  ["title-l", "Lisbon trip", "Note title, Markdown H1"],
+  ["title-m", "To sort", "Markdown H2, dialog and empty-state titles, desktop sidebar title"],
+  ["title-s", "Book notes: Deep Work", "Row titles, Markdown H3"],
+  ["body-l", "Flights booked for 12 Dec.", "Note body in preview, search field text"],
+  ["body-m", "This can’t be undone.", "Dialog and empty-state body"],
+  ["body-s", "Oat milk, lemons, sourdough", "Row preview, search snippet, snackbar"],
+  ["label-l", "New note", "Large buttons"],
+  ["label-m", "Export as .md", "Medium buttons, menu items"],
+  ["control", "Edit  Preview", "Segmented control, copy button"],
+  ["caption", "3h · Edited 3 h ago", "Timestamps, note meta, shortcuts"],
+  ["overline", "Pinned", "Section labels, code language"],
+  ["code", "val note = Note()", "Code blocks; inline code at 0.86 em"],
+  ["editor", "## To sort", "Raw Markdown in edit mode"]
+];
+(function () {
+  let html = `<thead><tr><th>Token</th><th>Specimen</th><th>Family</th><th>Weight</th><th>Size / line</th><th>Tracking</th><th>Usage</th></tr></thead><tbody>`;
+  html += TYPE.map(([t, s, u]) => `<tr><td class="mono">type-${t}</td><td><span class="mk-type-${t}" data-type="${t}">${s}</span></td><td class="mono" data-f="family"></td><td class="mono" data-f="weight"></td><td class="mono" data-f="size"></td><td class="mono" data-f="track"></td><td class="muted">${u}</td></tr>`).join("");
+  $("#type-table").innerHTML = html + "</tbody>";
+  const fill = () => document.querySelectorAll("#type-table [data-type]").forEach(el => {
+    const cs = getComputedStyle(el), tr = el.closest("tr"), fs = parseFloat(cs.fontSize), ls = parseFloat(cs.letterSpacing);
+    tr.querySelector('[data-f="family"]').textContent = /Mono/.test(cs.fontFamily) ? "Plex Mono" : "Plex Sans";
+    tr.querySelector('[data-f="weight"]').textContent = cs.fontWeight;
+    tr.querySelector('[data-f="size"]').textContent = `${+fs.toFixed(1)} / ${parseFloat(cs.lineHeight)}`;
+    tr.querySelector('[data-f="track"]').textContent = isNaN(ls) || ls === 0 ? "0" : `${+(ls / fs).toFixed(2)} em`;
+  });
+  fill(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fill);
+})();
+
+/* ---------- color table ---------- */
+const COLORS = [
+  ["Surfaces", [
+    ["bg", "App background: list, note, search", null],
+    ["surface", "Toolbar, inline code, disabled field, docs tables", null],
+    ["surface-2", "Selected segment, disabled filled button", null],
+    ["float", "Menus and dialogs; one step lighter than bg in dark", null],
+    ["border", "Hairlines between rows, field and menu borders", null],
+    ["border-strong", "Secondary button border, field hover, empty-state frame", null]]],
+  ["Text", [
+    ["text", "Primary text and active icons", "bg"],
+    ["text-2", "Previews, quotes, idle icons, dialog body", "bg"],
+    ["text-3", "Timestamps, meta, placeholders, section labels, checkbox border", "bg", "surface"],
+    ["text-disabled", "Disabled labels and icons (exempt from contrast)", "bg", null, true],
+    ["marker", "Faint Markdown markers in preview", "bg", null, true]]],
+  ["Accent", [
+    ["accent", "Primary button, links, checked box, pin, caret, editor syntax", "bg"],
+    ["accent-hover", "Primary button hover", null],
+    ["accent-pressed", "Primary button pressed, pressed link", null],
+    ["on-accent", "Text and icons on accent", "accent"],
+    ["accent-soft", "Selected row, active tool, focus halo", null],
+    ["on-accent-soft", "Text on accent-soft", "accent-soft"],
+    ["focus", "2 px focus ring", "bg"],
+    ["selection", "Text selection in the editor", null]]],
+  ["Danger", [
+    ["danger", "Delete button, destructive menu item", "bg"],
+    ["danger-hover", "Delete button hover", null],
+    ["danger-pressed", "Delete button pressed", null],
+    ["on-danger", "Text on danger", "danger"],
+    ["danger-soft", "Hover on destructive menu item", null]]],
+  ["Feedback", [
+    ["highlight", "Search match background", null],
+    ["on-highlight", "Text on highlight", "highlight"],
+    ["inverse", "Snackbar and tooltip", null],
+    ["on-inverse", "Text on inverse", "inverse"],
+    ["inverse-accent", "Snackbar action", "inverse"],
+    ["scrim", "Behind the delete dialog", null]]],
+  ["State layers", [
+    ["state-hover", "Painted over a surface on hover", null],
+    ["state-pressed", "Painted over a surface while pressed", null]]],
+  ["Code", [
+    ["code-bg", "Code block background", null],
+    ["code-text", "Code text", "code-bg"],
+    ["code-keyword", "Keywords", "code-bg"],
+    ["code-string", "Strings", "code-bg"],
+    ["code-comment", "Comments", "code-bg"],
+    ["code-number", "Numbers", "code-bg"]]],
+  ["Elevation", [["shadow-color", "Color of shadow-float", null]]]
+];
+(function () {
+  const sw = (cls, n, v) => `<span class="doc-sw ${cls}" style="background:none"><i style="background:var(--mk-${n})"></i><code>${v.toUpperCase()}</code></span>`;
+  let html = `<thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>Contrast light</th><th>Contrast dark</th><th>Usage</th></tr></thead><tbody>`;
+  for (const [g, list] of COLORS) {
+    html += `<tr class="doc-group"><td colspan="6">${g}</td></tr>`;
+    for (const [n, u, on, on2, deco] of list) {
+      const l = tok(pl, n), d = tok(pd, n);
+      const cl = on ? pill(ratio(l, tok(pl, on)), deco) + (on2 ? " " + pill(ratio(l, tok(pl, on2)), deco) : "") : "";
+      const cd = on ? pill(ratio(d, tok(pd, on)), deco) + (on2 ? " " + pill(ratio(d, tok(pd, on2)), deco) : "") : "";
+      const onLabel = on ? `<br><span class="doc-cell__label">on ${on}${on2 ? ", " + on2 : ""}</span>` : "";
+      html += `<tr><td class="mono">--mk-${n}</td><td>${sw("theme-light", n, l)}</td><td>${sw("theme-dark", n, d)}</td><td>${cl}</td><td>${cd}${onLabel}</td><td class="muted">${u}</td></tr>`;
+    }
+  }
+  $("#color-table").innerHTML = html + "</tbody>";
+})();
+
+/* ---------- spacing, radius, motion, sizes ---------- */
+(function () {
+  const SP = [["1", "Gap between pin icon, title and time"], ["2", "Gap between buttons and between icon and label"], ["3", "Row and field padding, toolbar separators"], ["4", "Bottom bar and list search inset"], ["5", "Phone screen gutter"], ["6", "Dialog inset from the screen edge"], ["8", "Top padding of the desktop note column"], ["10", "Desktop note gutter"]];
+  $("#space-table").innerHTML = `<thead><tr><th>Token</th><th>Value</th><th></th><th>Usage</th></tr></thead><tbody>` + SP.map(([k, u]) => { const v = rootTok("space-" + k); return `<tr><td class="mono">--mk-space-${k}</td><td class="mono">${v}</td><td><div class="doc-bar" style="width:${v}"></div></td><td class="muted">${u}</td></tr>`; }).join("") + "</tbody>";
+  const RA = [["xs", "Checkbox, inline code, shortcut key, tooltip"], ["sm", "Toolbar tool, segment option, code block, menu item"], ["md", "Buttons, fields, icon buttons, desktop rows, snackbar"], ["lg", "Menu, dialog, empty-state glyph"]];
+  $("#radius-table").innerHTML = `<thead><tr><th>Token</th><th>Value</th><th></th><th>Usage</th></tr></thead><tbody>` + RA.map(([k, u]) => { const v = rootTok("radius-" + k); return `<tr><td class="mono">--mk-radius-${k}</td><td class="mono">${v}</td><td><div class="doc-radius" style="border-radius:${v}"></div></td><td class="muted">${u}</td></tr>`; }).join("") + "</tbody>";
+  const MO = [["dur-fast", "Hover and press color changes, checkbox"], ["dur-base", "Menu and dialog entering"], ["dur-slow", "Snackbar entering"], ["ease", "Standard easing for all of the above"]];
+  $("#motion-table").innerHTML = `<thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead><tbody>` + MO.map(([k, u]) => `<tr><td class="mono">--mk-${k}</td><td class="mono">${rootTok(k)}</td><td class="muted">${u}</td></tr>`).join("") + `<tr><td class="mono">row highlight</td><td class="mono">2400ms</td><td class="muted">Fade of the just-imported row highlight</td></tr></tbody>`;
+  const SZ = [["size-touch", "Minimum touch target"], ["size-icon", "Default icon"], ["size-icon-sm", "Icons inside fields, rows and code headers"], ["size-appbar", "App bar and desktop pane bar height"], ["size-toolbar", "Formatting toolbar height"], ["size-btn-l", "Large button height"], ["size-btn-m", "Medium button height"], ["size-iconbtn", "Icon button, plus 4 px hit area on each side"], ["size-field", "Search field height"], ["size-row-min", "Minimum phone row height"], ["gutter-phone", "Phone side padding"], ["gutter-desktop", "Desktop note side padding"], ["measure", "Max width of the desktop note column"]];
+  $("#size-table").innerHTML = `<thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead><tbody>` + SZ.map(([k, u]) => `<tr><td class="mono">--mk-${k}</td><td class="mono">${rootTok(k)}</td><td class="muted">${u}</td></tr>`).join("") + "</tbody>";
+})();
+
+/* ---------- icons ---------- */
+$("#icon-grid").innerHTML = M.ICONS.map(([n, l, u]) => `<div class="doc-icon">${M.icon(n)}<b>${l}</b><span>${n} · ${u}</span></div>`).join("");
+
+/* ---------- component demos ---------- */
+const S5 = ["default", "hover", "pressed", "focus", "disabled"];
+const n3 = byId(3), n1 = byId(1);
+const D = {
+  elevation: () => panels(cells([["shadow-float on float", `<div class="doc-elev" style="box-shadow:var(--mk-shadow-float);border:1px solid var(--mk-border)"></div>`], ["Hairline only (default)", `<div class="doc-elev" style="border:1px solid var(--mk-border);background:var(--mk-bg)"></div>`]])),
+  buttons: () => panels(matrix(["Primary", "Secondary", "Ghost", "Danger"], S5, (r, c) => M.btn({ v: r.toLowerCase(), label: { Primary: "New note", Secondary: "Cancel", Ghost: "Choose file", Danger: "Delete" }[r], state: c })), { stack: true }),
+  "button-sizes": () => panels(cells([
+    ["L · block · icon (bottom bar)", box(M.btn({ v: "primary", size: "l", block: true, icon: "plus", label: "New note" }), 300), "phone"],
+    ["M · icon", M.btn({ v: "secondary", icon: "import", label: "Import .md file" })],
+    ["M · primary with icon", M.btn({ v: "primary", icon: "plus", label: "New note" })],
+    ["M · secondary with icon", M.btn({ v: "secondary", icon: "edit", label: "Edit note" })]])),
+  iconbuttons: () => panels(matrix(["Pin", "Import", "More"], ["default", "hover", "pressed", "focus", "on", "disabled"], (r, c) => {
+    const icon = { Pin: "pin", Import: "import", More: "more" }[r];
+    if (c === "on" && r !== "Pin") return `<span class="doc-cell__label">n/a</span>`;
+    return M.iconBtn({ icon, label: r, on: c === "on", state: c === "on" ? undefined : c });
+  })),
+  segmented: () => panels(cells([
+    ["Preview selected", M.seg({ sel: "Preview" })],
+    ["Edit selected", M.seg({ sel: "Edit" })],
+    ["Hover on Edit", M.seg({ sel: "Preview", state: "hover", stateIdx: 0 })],
+    ["Pressed on Edit", M.seg({ sel: "Preview", state: "pressed", stateIdx: 0 })],
+    ["Focused", M.seg({ sel: "Preview", state: "focus", stateIdx: 1 })],
+    ["Disabled", M.seg({ sel: "Preview", disabled: true })],
+    ["Desktop, three options", M.seg({ opts: ["Edit", "Preview", "Split"], sel: "Split" })]])),
+  fields: () => panels(cells([
+    ["Search · placeholder", box(M.field({}))],
+    ["Search · hover", box(M.field({ state: "hover" }))],
+    ["Search · focused", box(M.field({ state: "focus" }))],
+    ["Search · with text", box(M.field({ state: "focus", value: "lisbon" }))],
+    ["Search · disabled", box(M.field({ state: "disabled" }))],
+    ["Search · desktop shortcut", box(M.field({ kbd: "Ctrl F" }))],
+    ["Title · filled", box(M.titleField({ value: "Lisbon trip" }))],
+    ["Title · focused", box(M.titleField({ value: "Lisbon trip", state: "focus" }))],
+    ["Title · empty, focused", box(M.titleField({ state: "focus" }))],
+    ["Section label and note meta", box(`<div style="margin:0 -20px">${M.overline("Pinned")}</div><div class="mk-meta">${M.meta(n3)}</div>`)]], true)),
+  rows: () => panels(cells([
+    ["Default", M.row({ n: n3 }), "phone"],
+    ["Pinned", M.row({ n: byId(2) }), "phone"],
+    ["Hover (desktop)", M.row({ n: n3, state: "hover" }), "phone"],
+    ["Pressed", M.row({ n: n3, state: "pressed" }), "phone"],
+    ["Focused", M.row({ n: n3, state: "focus" }), "phone"],
+    ["Untitled, no text", M.row({ n: { id: 0, title: "", body: "", age: 0 } }), "phone"],
+    ["Long title", M.row({ n: { id: 0, title: "Notes from the product offsite in Porto, day two afternoon", body: byId(5).body, age: 4000 } }), "phone"],
+    ["Just imported (start of fade)", M.row({ n: M.IMPORTED(), flash: true }), "phone"]], true)),
+  "rows-desk": () => panels(cells([
+    ["Desktop · default", box(M.row({ n: n3, desk: true }), 304), ""],
+    ["Desktop · hover", box(M.row({ n: n3, desk: true, state: "hover" }), 304), ""],
+    ["Desktop · selected", box(M.row({ n: n1, desk: true, selected: true }), 304), ""],
+    ["Desktop · focused", box(M.row({ n: n3, desk: true, state: "focus" }), 304), ""]], true)),
+  results: () => panels(cells([
+    ["Title match", M.row({ n: byId(4), q: "notes" }), "phone"],
+    ["Text match, snippet around the hit", M.row({ n: byId(1), q: "notes" }), "phone"],
+    ["Several words", M.row({ n: byId(3), q: "tram pass" }), "phone"],
+    ["Count label", `<div style="margin:0">${M.overline("3 results")}</div>`, "phone"]], true)),
+  checklist: () => panels(matrix(["Unchecked", "Checked"], S5, (r, c) => M.task({ label: r === "Checked" ? "Book flights" : "Tram 28 pass", checked: r === "Checked", state: c }))),
+  toolbar: () => panels(cells([
+    ["Default", box(M.toolbar(), 360), "phone"],
+    ["Italic active: the selection is already italic", box(M.toolbar({ active: ["italic"] }), 360), "phone"],
+    ["Disabled while the title field has focus", box(M.toolbar({ disabled: true }), 360), "phone"],
+    ["Desktop, top of the editor", box(M.toolbar({ top: true }), 420), "wide"]], true)),
+  tools: () => panels(matrix(["Bold"], ["default", "hover", "pressed", "focus", "active", "disabled"], (r, c) => M.tool({ icon: "bold", label: "Bold", active: c === "active", state: c === "active" ? undefined : c }))),
+  menu: () => panels(cells([
+    ["Pinned note", M.noteMenu({ pinned: true })],
+    ["Unpinned note, hover on Export", M.menu([{ icon: "pin", label: "Pin to top", act: "pin" }, { icon: "export", label: "Export as .md", state: "hover" }, "-", { icon: "trash", label: "Delete note", danger: true }])],
+    ["Pressed on Delete", M.menu([{ icon: "pin", label: "Pin to top" }, { icon: "export", label: "Export as .md" }, "-", { icon: "trash", label: "Delete note", danger: true, state: "pressed" }])]], true)),
+  "menu-items": () => panels(matrix(["Item", "Danger item"], S5, (r, c) => `<div style="width:200px">${M.menu([r === "Item" ? { icon: "export", label: "Export as .md", state: c } : { icon: "trash", label: "Delete note", danger: true, state: c }]).replace('class="mk-menu"', 'class="mk-menu" style="min-width:0;box-shadow:none"')}</div>`), { stack: true }),
+  dialog: () => panels(cells([["Delete confirmation over the scrim", `<div style="position:relative;height:300px;width:340px;max-width:100%;overflow:hidden;border-radius:8px;background:var(--mk-bg)"><div style="padding:16px;opacity:.9">${M.row({ n: n3 })}</div><div class="mk-scrim" style="animation:none">${M.deleteDialog(n3).replace("mk-dialog\"", "mk-dialog\" style=\"animation:none\"")}</div></div>`]])),
+  snackbar: () => panels(cells([
+    ["Import failed, with action", M.snack({ icon: "alert", msg: "Couldn’t import “scan.pdf”. Choose a Markdown (.md) file.", action: "Choose file" }).replace('class="mk-snack"', 'class="mk-snack" style="animation:none"'), "phone"],
+    ["Export finished", M.snack({ msg: "Exported “Lisbon trip.md”" }).replace('class="mk-snack"', 'class="mk-snack" style="animation:none"'), "phone"],
+    ["Action · hover", M.snack({ msg: "Note deleted", action: "OK", state: "hover" }).replace('class="mk-snack"', 'class="mk-snack" style="animation:none"'), "phone"],
+    ["Action · focused", M.snack({ msg: "Note deleted", action: "OK", state: "focus" }).replace('class="mk-snack"', 'class="mk-snack" style="animation:none"'), "phone"]], true)),
+  empty: () => panels(cells([
+    ["No notes (list)", M.EMPTY.notes(), "phone"],
+    ["Search, before typing", M.EMPTY.search(), "phone"],
+    ["Search, no results", M.EMPTY.none("bananas"), "phone"],
+    ["Note preview, empty note", M.EMPTY.preview(), "phone"],
+    ["Desktop · no notes (main pane)", M.EMPTY.notes({ desk: true }), "phone"],
+    ["Desktop · sidebar, small", M.EMPTY.none("bananas", { size: "s" }), "phone"]], true)),
+  tooltip: () => panels(cells([
+    ["Icon button with shortcut", M.tooltip("Import .md file", "Ctrl O")],
+    ["Toolbar tool", M.tooltip("Bold", "Ctrl B")],
+    ["No shortcut", M.tooltip("More actions")],
+    ["Shortcut key", M.kbd("Ctrl F")]])),
+  bars: () => panels(cells([
+    ["Notes list", M.appbarList(), "phone"],
+    ["Note · preview", M.appbarNote({ n: n1, mode: "preview" }), "phone"],
+    ["Note · edit, scrolled", M.appbarNote({ n: n3, mode: "edit", scrolled: true }), "phone"],
+    ["Search", M.appbarSearch({ q: "lisbon", live: false, state: "focus" }), "phone"],
+    ["Bottom bar", M.bottombar(), "phone"],
+    ["List search entry", `<div class="mk-list-search">${M.field({ act: "noop" })}</div>`, "phone"]], true)),
+  "node-states": () => panels(cells([
+    ["Link · default", `<span class="mk-md" style="display:inline">Open <a class="mk-md-link" href="https://commonmark.org" target="_blank" rel="noopener">commonmark.org</a></span>`],
+    ["Link · hover", `<span class="mk-md" style="display:inline"><a class="mk-md-link is-hover" href="https://commonmark.org" target="_blank" rel="noopener">commonmark.org</a></span>`],
+    ["Link · pressed", `<span class="mk-md" style="display:inline"><a class="mk-md-link is-pressed" href="https://commonmark.org" target="_blank" rel="noopener">commonmark.org</a></span>`],
+    ["Link · focused", `<span class="mk-md" style="display:inline"><a class="mk-md-link is-focus" href="https://commonmark.org" target="_blank" rel="noopener">commonmark.org</a></span>`],
+    ["Copy · default", `<button type="button" class="mk-code__copy">${M.icon("copy")}<span>Copy</span></button>`],
+    ["Copy · hover", `<button type="button" class="mk-code__copy is-hover">${M.icon("copy")}<span>Copy</span></button>`],
+    ["Copy · copied (1.5 s)", `<button type="button" class="mk-code__copy is-copied">${M.icon("check")}<span>Copied</span></button>`],
+    ["Editor · selection and caret", box(M.source("Hotel is near *Príncipe Real*.", { sel: "Príncipe Real" }), 300)],
+    ["Editor · empty", box(M.source(""), 300)]]))
+};
+const NODES = [
+  ["Headings", "Three levels. The title field sits above the body, so most notes start at level 2. The marker stays visible in text-3 marker color.", "# Lisbon trip\n## To sort\n### Day 2"],
+  ["Paragraph and emphasis", "Bold uses SemiBold 600, italic uses the true italic.", "Pack **light**. The *early* tram is quieter, and the stop is `Martim Moniz`."],
+  ["Web link", "Opens in the browser from preview.", "Opening times on [visitlisboa.com](https://www.visitlisboa.com)."],
+  ["Bulleted list", "En dash bullets in text-3; nested items indent one level.", "- Oat milk\n- Lemons\n  - Unwaxed if possible\n- Sourdough"],
+  ["Numbered list", "Numbers in Plex Mono, text-3.", "1. Export the note as .md\n2. Open it in any editor\n3. Import it back"],
+  ["Checklist", "Tick it here; preview writes [x] back to the source.", "- [x] Book flights\n- [ ] Tram 28 pass\n- [ ] Sintra day trip"],
+  ["Quote", "2 px accent rule, text-2.", "> Writing comes first. Nothing should ask you to organize before you write."],
+  ["Code block", "Language label, copy button, horizontal scroll instead of wrapping.", "```kotlin\nfun greet(name: String) {\n    println(\"Hello, $name\") // 1 note\n}\n```"]
+];
+D.nodes = () => `<div class="doc-nodes mk"><div class="doc-node doc-node--head"><div>Node</div><div>Edit mode</div><div>Preview</div></div>${NODES.map(([n, w, md]) => `<div class="doc-node"><div class="doc-node__name"><b>${n}</b><span>${w}</span></div><div class="doc-node__src">${M.source(md, { noCaret: true })}</div><div>${M.render(md)}</div></div>`).join("")}</div>`;
+
+document.querySelectorAll("[data-demo]").forEach(el => { const f = D[el.dataset.demo]; if (f) el.innerHTML = f(); });
+
+/* ---------- light interactivity ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest(".mk-task");
+  if (t && !t.disabled) { const on = !t.classList.contains("is-checked"); t.classList.toggle("is-checked", on); t.setAttribute("aria-checked", String(on)); return; }
+  const c = e.target.closest(".mk-code__copy");
+  if (c && c.closest(".mk-code")) {
+    const code = c.closest(".mk-code").querySelector("code").innerText;
+    const done = () => { c.classList.add("is-copied"); c.innerHTML = M.icon("check") + "<span>Copied</span>"; setTimeout(() => { c.classList.remove("is-copied"); c.innerHTML = M.icon("copy") + "<span>Copy</span>"; }, 1500); };
+    try { navigator.clipboard.writeText(code).then(done, () => {}); } catch (err) {}
+  }
+});
+
+/* ---------- current section in nav ---------- */
+const links = [...document.querySelectorAll("#nav a")];
+const targets = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) { links.forEach(a => a.classList.toggle("is-current", a.getAttribute("href") === "#" + en.target.id)); } });
+  }, { rootMargin: "-80px 0px -70% 0px" });
+  targets.forEach(t => io.observe(t));
+}
+})();
+</script>

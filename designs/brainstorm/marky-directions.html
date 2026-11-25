@@ -1,0 +1,691 @@
+<title>Marky Design Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+/* Layout: a quiet review board. Pick a direction at the top; below it, phone screens, a desktop window, then a node-by-node specimen sheet. */
+:root{
+  --page:#F6F7F8; --ink:#16181C; --ink2:#5C616B; --rule:#E2E4E8; --chip:#FFFFFF; --frame:#1B1C1F; --focus:#3B6BF5;
+  --f-chrome:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#101113; --ink:#ECEDEF; --ink2:#9A9EA8; --rule:#2A2C31; --chip:#18191C; --frame:#2C2E33; --focus:#7C9BFF; color-scheme:dark}}
+:root[data-theme="dark"]{--page:#101113; --ink:#ECEDEF; --ink2:#9A9EA8; --rule:#2A2C31; --chip:#18191C; --frame:#2C2E33; --focus:#7C9BFF; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:var(--f-chrome);font-size:15px;line-height:1.5}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding-block:40px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* ---------- page chrome ---------- */
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+h1.page-h{font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.025em;margin:8px 0 10px;text-wrap:balance;font-weight:700}
+.lede{max-width:66ch;color:var(--ink2);margin:0}
+.dirs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+.dir{all:unset;box-sizing:border-box;cursor:pointer;background:var(--chip);border:1px solid var(--rule);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.dir:hover{border-color:var(--ink2)}
+.dir[aria-selected="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.dir:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.dir-k{font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase}
+.dir-n{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.dir-t{font-size:13.5px;color:var(--ink2)}
+.dir-sw{display:flex;gap:4px;margin-top:6px}
+.dir-sw i{width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
+@media (max-width:760px){.dirs{grid-template-columns:1fr}}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:36px 0 8px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.bar h2{margin:0;font-size:26px;letter-spacing:-.02em}
+.modes{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2)}
+.seg{display:flex;background:var(--chip);border:1px solid var(--rule);border-radius:10px;padding:3px}
+.seg button{all:unset;cursor:pointer;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+.seg button:focus-visible{outline:2px solid var(--focus)}
+
+.intro{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;margin-top:20px}
+.intro p{margin:0 0 12px;max-width:62ch}
+.traits{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;font-size:14px}
+.traits dt{color:var(--ink2);font-weight:500}
+.traits dd{margin:0}
+.swatches{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.swatch{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.swatch i{width:28px;height:28px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
+.swatch code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--ink)}
+@media (max-width:820px){.intro{grid-template-columns:1fr;gap:20px}}
+
+.sec-h{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin:48px 0 18px}
+.phones{display:flex;flex-wrap:wrap;gap:36px 32px}
+.phones figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+figcaption{font-size:13px;color:var(--ink2)}
+.desk-wrap{overflow-x:auto;padding:4px 4px 16px}
+.note{font-size:13px;color:var(--ink2);margin:10px 0 0;max-width:70ch}
+
+/* ---------- variant token sets ---------- */
+.v{--sel:rgba(47,91,234,.18)}
+.v.margin{
+  --bg:#FFFFFF; --surface:#F4F6F9; --surface2:#E9EDF3; --line:#E2E6EC; --text:#14171C; --muted:#5F6878; --faint:#9AA3B1;
+  --accent:#2F5BEA; --accent-soft:#E7EDFF; --on-accent:#FFFFFF; --on-accent-soft:#1D3FB8; --pin-soft:#F4F6F9;
+  --code-bg:#F6F8FA; --code-text:#1E2530; --code-k:#B4236A; --code-s:#1C7C4A; --code-c:#8A93A3; --code-chip:#E9EDF3;
+  --mark:#FFF1A8; --mark-strong:#FFE066; --sel:rgba(47,91,234,.16);
+  --kb:#D2D5DB; --key:#FFFFFF; --key-text:#14171C;
+  --f-ui:"IBM Plex Sans",system-ui,sans-serif; --f-read:"IBM Plex Sans",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+.v.margin[data-mode="dark"]{
+  --bg:#0E1116; --surface:#151920; --surface2:#1E242E; --line:#252C37; --text:#E5E9F0; --muted:#8E97A6; --faint:#5A6473;
+  --accent:#7C9BFF; --accent-soft:#1B2442; --on-accent:#0E1116; --on-accent-soft:#AFC2FF; --pin-soft:#151920;
+  --code-bg:#12161C; --code-text:#D6DCE6; --code-k:#F08BC0; --code-s:#7FD3A3; --code-c:#5A6473; --code-chip:#1E242E;
+  --mark:#4A4220; --mark-strong:#6B5D1F; --sel:rgba(124,155,255,.26);
+  --kb:#1F2127; --key:#3A3D45; --key-text:#E5E9F0;
+}
+.v.tonal{
+  --bg:#F5FAF8; --surface:#E7F0EC; --surface2:#DAE7E2; --line:#C8D6D0; --text:#15201C; --muted:#52615B; --faint:#86948E;
+  --accent:#0F6B5A; --accent-soft:#A7F0DA; --on-accent:#FFFFFF; --on-accent-soft:#00201A; --pin-soft:#FFE2CF; --pin-ink:#7A3A10;
+  --code-bg:#1C2724; --code-text:#D3ECE4; --code-k:#FFB38A; --code-s:#9BE3C9; --code-c:#7E948C; --code-chip:rgba(211,236,228,.12);
+  --mark:#FFE2CF; --mark-strong:#FFC9A6; --sel:rgba(15,107,90,.2);
+  --kb:#D5DDD9; --key:#FFFFFF; --key-text:#15201C;
+  --f-ui:"Figtree",system-ui,sans-serif; --f-read:"Figtree",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+.v.tonal[data-mode="dark"]{
+  --bg:#0E1513; --surface:#18221F; --surface2:#222E2A; --line:#33413C; --text:#DCE5E1; --muted:#9EACA7; --faint:#6C7A75;
+  --accent:#86D6C0; --accent-soft:#00513F; --on-accent:#00382D; --on-accent-soft:#A7F0DA; --pin-soft:#4A2A14; --pin-ink:#FFDCC6;
+  --code-bg:#0A100E; --code-text:#CBE6DD; --code-k:#FFB38A; --code-s:#86D6C0; --code-c:#5F726B; --code-chip:rgba(203,230,221,.1);
+  --mark:#4A2A14; --mark-strong:#7A4A22; --sel:rgba(134,214,192,.24);
+  --kb:#1D2321; --key:#38403D; --key-text:#DCE5E1;
+}
+.v.reader{
+  --bg:#FFFFFF; --surface:#F3F3F0; --surface2:#EAEAE6; --line:#E3E3DE; --text:#1A1A19; --muted:#686862; --faint:#A3A39C;
+  --accent:#1A1A19; --accent-soft:#FFF0A0; --on-accent:#FFFFFF; --on-accent-soft:#1A1A19; --pin-soft:#FFF0A0;
+  --code-bg:#F3F3F0; --code-text:#2A2A28; --code-k:#7A3E9D; --code-s:#3F6E2A; --code-c:#9C9C95; --code-chip:#EAEAE6;
+  --mark:#FFEB7A; --mark-strong:#FFDD33; --sel:rgba(255,221,51,.45);
+  --kb:#D3D3CF; --key:#FFFFFF; --key-text:#1A1A19;
+  --f-ui:"Instrument Sans",system-ui,sans-serif; --f-read:"Literata",Georgia,serif; --f-mono:"DM Mono",ui-monospace,monospace;
+}
+.v.reader[data-mode="dark"]{
+  --bg:#151514; --surface:#1E1E1C; --surface2:#282826; --line:#2E2E2B; --text:#ECEAE3; --muted:#A2A098; --faint:#67665F;
+  --accent:#ECEAE3; --accent-soft:#4A4120; --on-accent:#151514; --on-accent-soft:#F3E3A0; --pin-soft:#4A4120;
+  --code-bg:#1E1E1C; --code-text:#DDDBD3; --code-k:#D3A6F0; --code-s:#A9D58E; --code-c:#67665F; --code-chip:#282826;
+  --mark:rgba(232,197,71,.34); --mark-strong:rgba(232,197,71,.55); --sel:rgba(232,197,71,.35);
+  --kb:#1E1E1C; --key:#3B3A37; --key-text:#ECEAE3;
+}
+
+/* ---------- shared mockup primitives ---------- */
+.v button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;margin:0}
+.ic{width:20px;height:20px;flex:none;display:block}
+.ib{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;color:var(--muted);flex:none}
+.ib.act{color:var(--accent)}
+.ib.act .pin-head{fill:currentColor}
+.sp{flex:1}
+.phone{width:300px;height:640px;border-radius:46px;padding:10px;background:var(--frame);box-shadow:0 24px 50px -24px rgba(0,0,0,.45);flex:none}
+.screen{width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--bg);color:var(--text);display:flex;flex-direction:column;position:relative;font-family:var(--f-ui);font-size:14px;line-height:1.45}
+.status{height:36px;display:flex;justify-content:space-between;align-items:center;padding:4px 26px 0;font-size:12.5px;font-weight:600;flex:none;font-family:system-ui,-apple-system,sans-serif}
+.status svg{height:11px;width:auto}
+.scroll{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.clamp1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nbar{display:flex;align-items:center;gap:2px;padding:2px 8px;height:50px;flex:none}
+.nbody{padding:6px 22px 28px}
+
+/* markdown nodes: shared base */
+.md{display:flex;flex-direction:column;gap:12px}
+.md-p{margin:0}
+.md-h{margin:4px 0 -2px}
+.md-mark{display:none}
+.md-list{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.md-list .md-list{margin-top:4px}
+.md-list>li{position:relative}
+.md-tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.md-task{display:flex !important;gap:10px;align-items:flex-start;text-align:left;padding:4px 0 !important;width:100%;line-height:inherit !important}
+.md-box{flex:none;width:18px;height:18px;display:grid;place-items:center;margin-top:2px;transition:background .15s,border-color .15s}
+.md-box .ic{width:12px;height:12px;opacity:0;transition:opacity .15s}
+.md-task.done .md-box .ic{opacity:1}
+.md-quote{margin:0}
+.md-quote p{margin:0}
+.md-code{overflow:hidden;min-width:0}
+.md-code-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.md-code pre{margin:0;overflow-x:auto}
+.md-code code{font-family:var(--f-mono)}
+.md-code .ln{display:block;white-space:pre}
+.tk-k{color:var(--code-k)} .tk-s{color:var(--code-s)} .tk-c{color:var(--code-c);font-style:italic}
+.md-ic{font-family:var(--f-mono);font-size:.86em}
+.md-copy{display:flex !important;align-items:center;gap:5px}
+.md-copy .ic{width:13px;height:13px}
+
+/* raw editor */
+.src{font-family:var(--f-mono);font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.src .mk{color:var(--accent)}
+.src .hl-h{font-weight:600}
+.src .hl-url{color:var(--faint)}
+.src .hl-link{text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:2px}
+.src .sel{background:var(--sel);border-radius:2px}
+.caret{display:inline-block;width:2px;height:1.2em;background:var(--accent);vertical-align:-.25em;margin-left:1px;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}.md-box,.md-box .ic{transition:none}}
+
+/* toolbar + keyboard */
+.tb{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;flex:none}
+.tb::-webkit-scrollbar{display:none}
+.tb button{flex:none;height:36px;min-width:34px;display:grid !important;place-items:center;color:var(--text) !important;font-size:15px !important}
+.tb .ic{width:18px;height:18px}
+.kb{background:var(--kb);padding:8px 3px 22px;display:flex;flex-direction:column;gap:9px;flex:none;font-family:system-ui,-apple-system,sans-serif}
+.kb-row{display:flex;justify-content:center;gap:4px}
+.key{flex:1;max-width:24px;height:36px;border-radius:5px;background:var(--key);color:var(--key-text);display:grid;place-items:center;font-size:15px;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.key.w{max-width:36px;font-size:13px}
+.key.w2{max-width:58px;font-size:12px}
+.key.space{max-width:none;flex:4;font-size:12px}
+.kb-row:nth-child(2){padding:0 12px}
+
+/* desktop window */
+.desk{width:1080px;height:660px;border-radius:12px;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--f-ui);font-size:14px;line-height:1.45;display:flex;flex-direction:column;box-shadow:0 30px 60px -30px rgba(0,0,0,.45),0 0 0 1px var(--line)}
+.win-bar{height:36px;display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);flex:none}
+.win-bar i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.win-bar span{flex:1;text-align:center;margin-right:60px;font-weight:500}
+.win-body{flex:1;display:flex;min-height:0}
+.side{width:300px;flex:none;display:flex;flex-direction:column;border-right:1px solid var(--line)}
+.side-head{display:flex;align-items:center;gap:2px;padding:14px 10px 8px 20px}
+.side-title{flex:1;font-weight:600;font-size:18px}
+.side-search{margin:0 14px 10px;height:36px;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:8px;background:var(--surface);color:var(--faint);font-size:13.5px}
+.side-search .ic{width:16px;height:16px}
+.side-search kbd{margin-left:auto;font:500 11px var(--f-mono);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 5px;background:var(--bg)}
+.side-list{flex:1;overflow:auto;padding:0 8px 12px;scrollbar-width:thin}
+.side-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 12px 4px}
+.drow{padding:10px 12px;border-radius:8px}
+.drow.sel{background:var(--surface2)}
+.drow-top{display:flex;gap:6px;align-items:baseline}
+.drow-title{font-weight:600;font-size:14px;flex:1;min-width:0}
+.drow-ago{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.drow-prev{font-size:12.5px;color:var(--muted);margin-top:2px}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.main-bar{height:54px;display:flex;align-items:center;gap:4px;padding:0 14px 0 18px;border-bottom:1px solid var(--line);flex:none}
+.main-body{flex:1;overflow:auto;min-height:0}
+.main-col{max-width:660px;margin:0 auto;padding:36px 40px 56px}
+.split{display:grid;grid-template-columns:1fr 1fr;height:100%}
+.split>div{overflow:auto;min-width:0}
+
+/* node specimen */
+.spec{border-radius:16px;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--f-ui);font-size:14px;line-height:1.45;box-shadow:0 0 0 1px var(--line)}
+.spec-head,.spec-row{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1.2fr)}
+.spec-head{background:var(--surface);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.spec-head>div{padding:10px 20px}
+.spec-row{border-top:1px solid var(--line)}
+.spec-row>div{padding:20px;min-width:0}
+.spec-name{font-weight:600;font-size:14.5px}
+.spec-why{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+.spec-src{background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.spec-src .src{font-size:12.5px}
+@media (max-width:860px){
+  .spec-head{display:none}
+  .spec-row{grid-template-columns:1fr}
+  .spec-src{border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .spec-row>div{padding:16px}
+}
+
+/* ================= MARGIN ================= */
+.margin .m-top{display:flex;align-items:center;gap:2px;padding:4px 10px 4px 20px}
+.margin .m-title{font-size:26px;font-weight:600;letter-spacing:-.02em;flex:1}
+.margin .m-search{margin:4px 16px 6px;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--faint);font-size:14px}
+.margin .m-search .ic{width:17px;height:17px}
+.margin .m-sec{font:500 10.5px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 20px 8px}
+.margin .m-row{padding:11px 20px 12px;border-top:1px solid var(--line)}
+.margin .m-row-top{display:flex;align-items:baseline;gap:6px}
+.margin .m-row-title{font-weight:600;font-size:15px;flex:1;min-width:0}
+.margin .m-ago{font:12px var(--f-mono);color:var(--faint)}
+.margin .m-row-prev{font-size:13px;color:var(--muted);margin-top:3px}
+.margin .m-pin{color:var(--accent);align-self:center}
+.margin .m-pin .ic{width:14px;height:14px}
+.margin .m-pin .pin-head{fill:currentColor}
+.margin .m-bottom{padding:10px 16px 20px;border-top:1px solid var(--line);flex:none}
+.margin .m-new{width:100%;height:44px;border-radius:8px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.margin .m-new .ic{width:18px;height:18px}
+.margin .m-seg{display:flex;border:1px solid var(--line);border-radius:7px;padding:2px;font:500 12px var(--f-mono);margin-left:6px}
+.margin .m-seg span{padding:4px 10px;border-radius:5px;color:var(--muted)}
+.margin .m-seg .on{background:var(--surface2);color:var(--text)}
+.margin .ntitle{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+.margin .nmeta{font:11.5px var(--f-mono);color:var(--faint);margin:6px 0 18px}
+.margin .md{font-size:15px;line-height:1.6}
+.margin .md-mark{display:inline;font:500 .6em var(--f-mono);color:var(--faint);margin-right:.55em;vertical-align:.18em;letter-spacing:.05em}
+.margin .md-h1{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+.margin .md-h2{font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+.margin .md-h3{font-size:15px;font-weight:600}
+.margin .md-ul{list-style:none;padding-left:18px}
+.margin .md-ul>li::before{content:"–";position:absolute;left:-17px;color:var(--faint);font-family:var(--f-mono)}
+.margin .md-ol{padding-left:28px}
+.margin .md-ol>li::marker{font:500 12px var(--f-mono);color:var(--faint)}
+.margin .md-box{border:1.5px solid var(--faint);border-radius:4px;color:var(--on-accent);margin-top:3px}
+.margin .md-task.done .md-box{background:var(--accent);border-color:var(--accent)}
+.margin .md-task.done .md-task-text{color:var(--muted)}
+.margin .md-quote{border-left:2px solid var(--accent);padding:2px 0 2px 14px;color:var(--muted)}
+.margin .md-code{border:1px solid var(--line);border-radius:6px;background:var(--code-bg)}
+.margin .md-code-head{padding:5px 6px 5px 12px;border-bottom:1px solid var(--line);font:500 10.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.margin .md-copy{font:inherit;color:var(--muted) !important;padding:3px 6px !important;border-radius:4px}
+.margin .md-code pre{font-size:12.5px;line-height:1.6;color:var(--code-text);padding:10px 12px}
+.margin .md-ic{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.margin .md-link{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.margin .tb{background:var(--surface);border-top:1px solid var(--line);padding:4px 8px}
+.margin .tb button{border-radius:6px;font-family:var(--f-mono)}
+.margin .tb .on{background:var(--accent-soft);color:var(--accent) !important}
+.margin .side-title{font-size:17px}
+.margin .split .src-pane{background:var(--surface);border-right:1px solid var(--line)}
+.margin .split .src-pane .tb{position:sticky;top:0;border-top:0;border-bottom:1px solid var(--line);padding:6px 16px;z-index:1}
+.margin .split .src{padding:24px 32px 40px}
+.margin .split .pv{padding:28px 40px 48px}
+
+/* ================= TONAL ================= */
+.tonal .t-top{display:flex;gap:8px;align-items:center;padding:6px 14px 8px}
+.tonal .t-searchbar{flex:1;height:50px;border-radius:25px;background:var(--surface2);display:flex;align-items:center;gap:10px;padding:0 18px;color:var(--muted);font-size:15px}
+.tonal .t-ib{width:50px;height:50px;border-radius:25px;background:var(--surface2);display:grid;place-items:center;color:var(--text)}
+.tonal .t-sec{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);padding:12px 22px 8px}
+.tonal .t-sec .ic{width:15px;height:15px}
+.tonal .t-pins{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px}
+.tonal .t-card{background:var(--surface);border-radius:22px;padding:14px 16px;margin:0 14px 8px}
+.tonal .t-pins .t-card{margin:0;background:var(--pin-soft);color:var(--pin-ink)}
+.tonal .t-pins .t-card-prev,.tonal .t-pins .t-card-ago{color:inherit;opacity:.78}
+.tonal .t-card-title{font-weight:700;font-size:15.5px;line-height:1.3}
+.tonal .t-card-prev{font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px}
+.tonal .t-card-ago{font-size:12px;color:var(--muted);margin-top:8px;font-weight:600}
+.tonal .t-scroll{padding-bottom:96px}
+.tonal .t-fab{position:absolute;right:16px;bottom:22px;height:58px;padding:0 22px 0 18px;border-radius:20px;background:var(--accent-soft);color:var(--on-accent-soft) !important;display:flex !important;align-items:center;gap:10px;font-weight:700 !important;font-size:15px !important;box-shadow:0 4px 14px -2px rgba(0,0,0,.28)}
+.tonal .t-seg{display:flex;background:var(--surface2);border-radius:20px;padding:3px}
+.tonal .t-seg span{width:42px;height:32px;border-radius:16px;display:grid;place-items:center;color:var(--muted)}
+.tonal .t-seg .ic{width:18px;height:18px}
+.tonal .t-seg .on{background:var(--accent-soft);color:var(--on-accent-soft)}
+.tonal .ntitle{font-size:27px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.tonal .nmeta{display:inline-flex;margin:10px 0 18px;background:var(--surface);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--muted)}
+.tonal .md{font-size:15.5px;line-height:1.6;gap:14px}
+.tonal .md-h1{font-size:26px;font-weight:800;letter-spacing:-.025em;line-height:1.2}
+.tonal .md-h2{font-size:19px;font-weight:700;color:var(--accent);line-height:1.3}
+.tonal .md-h3{font-size:16px;font-weight:700}
+.tonal .md-ul{list-style:none;padding-left:20px}
+.tonal .md-ul>li::before{content:"";position:absolute;left:-15px;top:.62em;width:6px;height:6px;border-radius:3px;background:var(--accent)}
+.tonal .md-ol{list-style:none;counter-reset:n;padding-left:34px;gap:8px}
+.tonal .md-ol>li{counter-increment:n}
+.tonal .md-ol>li::before{content:counter(n);position:absolute;left:-34px;top:.05em;width:23px;height:23px;border-radius:12px;background:var(--accent-soft);color:var(--on-accent-soft);font-size:12px;font-weight:800;display:grid;place-items:center;line-height:1}
+.tonal .md-tasks{background:var(--surface);border-radius:22px;padding:6px 14px}
+.tonal .md-task{padding:7px 0 !important;gap:12px}
+.tonal .md-box{width:21px;height:21px;border-radius:50%;border:2px solid var(--muted);color:var(--on-accent);margin-top:1px}
+.tonal .md-task.done .md-box{background:var(--accent);border-color:var(--accent)}
+.tonal .md-task.done .md-task-text{text-decoration:line-through;color:var(--muted)}
+.tonal .md-quote{background:var(--surface);border-radius:22px;padding:14px 16px 14px 46px;position:relative;font-weight:500}
+.tonal .md-quote::before{content:"\201C";position:absolute;left:14px;top:6px;font-size:46px;line-height:1;color:var(--accent);font-weight:800}
+.tonal .md-code{background:var(--code-bg);border-radius:22px}
+.tonal .md-code-head{padding:10px 10px 0 14px}
+.tonal .md-lang{font:500 11px var(--f-mono);background:var(--code-chip);color:var(--code-text);padding:4px 10px;border-radius:10px}
+.tonal .md-copy{color:var(--code-text) !important;font-size:12px !important;font-weight:600 !important;padding:6px 10px !important;border-radius:12px;background:var(--code-chip) !important}
+.tonal .md-code pre{font-size:12.5px;line-height:1.65;color:var(--code-text);padding:10px 16px 16px}
+.tonal .md-ic{background:var(--accent-soft);color:var(--on-accent-soft);border-radius:6px;padding:1px 6px}
+.tonal .md-link{color:var(--accent);font-weight:600;text-decoration:none;border-bottom:2px solid var(--accent-soft)}
+.tonal .md-link::after{content:"\2197";font-size:.85em;margin-left:2px}
+.tonal .src .mk{color:var(--accent);font-weight:500}
+.tonal .tb{margin:6px 8px 8px;background:var(--surface2);border-radius:26px;padding:5px 6px}
+.tonal .tb button{border-radius:18px;width:34px}
+.tonal .tb .on{background:var(--accent-soft);color:var(--on-accent-soft) !important}
+.tonal.desk,.tonal .desk{background:var(--surface)}
+.tonal .desk .win-bar{border-bottom:0}
+.tonal .side{border-right:0}
+.tonal .side-search{background:var(--surface2);border-radius:20px;height:42px;padding:0 14px}
+.tonal .drow{border-radius:18px;padding:12px 14px}
+.tonal .drow.sel{background:var(--accent-soft);color:var(--on-accent-soft)}
+.tonal .drow.sel .drow-prev,.tonal .drow.sel .drow-ago{color:inherit;opacity:.75}
+.tonal .main{background:var(--bg);margin:0 10px 10px 0;border-radius:26px;overflow:hidden}
+.tonal .main-bar{border-bottom:0}
+.tonal .t-newbtn{height:40px;padding:0 16px 0 12px;border-radius:14px;background:var(--accent-soft);color:var(--on-accent-soft) !important;display:flex !important;align-items:center;gap:6px;font-weight:700 !important;font-size:13.5px !important}
+.tonal .t-newbtn .ic{width:18px;height:18px}
+
+/* ================= READER ================= */
+.reader .r-top{display:flex;justify-content:flex-end;gap:2px;padding:2px 12px}
+.reader .r-head{padding:2px 24px 16px}
+.reader .r-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.reader .r-title{font:600 40px/1.05 var(--f-read);letter-spacing:-.025em;margin-top:6px}
+.reader .r-count{font:italic 14px var(--f-read);color:var(--muted);margin-top:6px}
+.reader .r-entry{padding:14px 24px 15px;border-top:1px solid var(--line)}
+.reader .r-entry-top{display:flex;align-items:baseline;gap:10px}
+.reader .r-entry-title{font:600 18px/1.3 var(--f-read);flex:1;min-width:0}
+.reader .r-ago{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.reader .r-prev{font:14px/1.5 var(--f-read);color:var(--muted);margin-top:3px}
+.reader .r-pinned{display:inline-block;margin-bottom:6px;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;background:var(--mark);padding:1px 6px;color:var(--text)}
+.reader .r-scroll{padding-bottom:90px}
+.reader .r-write{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;height:52px;padding:0 26px 0 22px;border-radius:26px;background:var(--text) !important;color:var(--bg) !important;display:flex !important;align-items:center;gap:8px;font-weight:600 !important;font-size:15px !important;box-shadow:0 6px 18px -6px rgba(0,0,0,.4)}
+.reader .r-write .ic{width:18px;height:18px}
+.reader .r-back{display:flex !important;align-items:center;gap:0;color:var(--text);font-size:15px !important;font-weight:500 !important;padding:0 4px !important}
+.reader .r-mode{font-weight:600 !important;font-size:14px !important;padding:5px 12px !important;border-radius:4px;background:var(--mark) !important;margin-right:4px !important}
+.reader .ntitle{font:600 30px/1.15 var(--f-read);letter-spacing:-.02em}
+.reader .nmeta{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:10px 0 20px}
+.reader .md{font:16px/1.72 var(--f-read);gap:14px}
+.reader .md-h1{font:600 28px/1.2 var(--f-read);letter-spacing:-.015em}
+.reader .md-h2{font:600 11.5px/1.4 var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:10px;padding-top:14px;border-top:1px solid var(--line)}
+.reader .md-h3{font:italic 400 19px/1.35 var(--f-read)}
+.reader .md-ul{list-style:none;padding-left:20px}
+.reader .md-ul>li::before{content:"\2022";position:absolute;left:-16px;color:var(--muted)}
+.reader .md-ol{padding-left:24px;font-variant-numeric:oldstyle-nums}
+.reader .md-ol>li::marker{color:var(--muted)}
+.reader .md-task{gap:12px}
+.reader .md-box{width:17px;height:17px;border:1.5px solid var(--text);border-radius:2px;color:var(--bg);margin-top:5px}
+.reader .md-task.done .md-box{background:var(--text)}
+.reader .md-task.done .md-task-text{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--muted)}
+.reader .md-quote{position:relative;padding-left:24px;font-style:italic;font-size:18px;line-height:1.55}
+.reader .md-quote::before{content:"\201C";position:absolute;left:-4px;top:-8px;font-size:54px;line-height:1;color:var(--mark-strong);font-style:normal}
+.reader .md-code{background:var(--code-bg);border-radius:4px}
+.reader .md-code-head{padding:8px 12px 0 14px;font:600 10.5px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.reader .md-copy{font:inherit !important;color:var(--muted) !important;letter-spacing:inherit !important}
+.reader .md-code pre{font-size:12.5px;line-height:1.7;counter-reset:ln;padding:6px 14px 12px 8px;color:var(--code-text)}
+.reader .md-code .ln::before{counter-increment:ln;content:counter(ln);display:inline-block;width:1.8em;color:var(--faint);margin-right:12px;text-align:right}
+.reader .md-ic{background:var(--code-bg);padding:1px 5px;border-radius:3px}
+.reader .md-link{color:inherit;text-decoration:underline;text-decoration-color:var(--mark-strong);text-decoration-thickness:.4em;text-underline-offset:-.2em;text-decoration-skip-ink:none}
+.reader .src{font-size:13.5px;line-height:1.8}
+.reader .src .mk{color:var(--faint)}
+.reader .tb{border-top:1px solid var(--line);padding:4px 10px;gap:2px;background:var(--bg)}
+.reader .tb button{font:600 11px var(--f-ui) !important;letter-spacing:.1em;text-transform:uppercase;padding:0 7px !important;min-width:0;border-radius:3px}
+.reader .tb .on{background:var(--mark) !important}
+.reader .side{background:var(--surface);border-right:0}
+.reader .side-search{background:var(--bg)}
+.reader .drow{border-radius:0;padding:12px 12px 13px;border-bottom:1px solid var(--line)}
+.reader .drow.sel{background:var(--bg)}
+.reader .drow-title{font:600 16px/1.3 var(--f-read)}
+.reader .drow-prev{font-family:var(--f-read)}
+.reader .side-title{font:600 22px var(--f-read)}
+.reader .main-col{max-width:640px;padding:48px 40px 64px}
+.reader .main-col .ntitle{font-size:38px}
+.reader .main-col .md{font-size:17.5px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Marky · design brainstorm, round 1</div>
+    <h1 class="page-h">Three directions for Marky</h1>
+    <p class="lede">Each direction applies one visual language to the three screens from the spec (notes list, note in preview, note in edit mode), a desktop window, and every Markdown node the preview renders. Checklists and Copy buttons are clickable. Use the theme switch to see each direction in dark mode.</p>
+  </header>
+
+  <div class="dirs" role="tablist" aria-label="Design directions" id="dirs"></div>
+
+  <section id="stage" aria-live="polite"></section>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- icons ---------- */
+const svg=(d,sw)=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="${sw||1.8}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.4" fill="currentColor" stroke="none"/>`;
+const I={
+  search:svg('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
+  plus:svg('<path d="M12 5v14M5 12h14"/>',2),
+  import:svg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/>'),
+  export:svg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/>'),
+  pin:svg('<path class="pin-head" d="M9 4h6l-1 5 3 3v2H7v-2l3-3z"/><path d="M12 14v6"/>'),
+  more:svg(dot(12,5.5)+dot(12,12)+dot(12,18.5)),
+  back:svg('<path d="M15 5l-7 7 7 7"/>',2),
+  pencil:svg('<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>'),
+  eye:svg('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>'),
+  trash:svg('<path d="M4 7h16M10 11v6M14 11v6M9 7V4.5h6V7M6 7l1 13h10l1-13"/>'),
+  list:svg('<path d="M10 6h10M10 12h10M10 18h10"/>'+dot(5,6)+dot(5,12)+dot(5,18)),
+  task:svg('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/>'),
+  quote:svg('<path d="M5 5v14M9.5 8h9.5M9.5 12h9.5M9.5 16h6"/>'),
+  code:svg('<path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5"/>'),
+  link:svg('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+  check:svg('<path d="M5.5 12.5l4 4 9-9.5"/>',3),
+  copy:svg('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>'),
+  split:svg('<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M12 4.5v15"/>')
+};
+const STATUS=`<div class="status"><span>9:41</span><svg viewBox="0 0 44 12" aria-hidden="true"><g fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><rect x="23" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1"/><rect x="25" y="3" width="12" height="6" rx="1.5"/><rect x="42" y="4" width="1.5" height="4" rx=".7"/></g></svg></div>`;
+
+/* ---------- content ---------- */
+const NOTES=[
+  {t:"Welcome to Marky",p:"Marky keeps your notes as plain Markdown. Type the syntax yourself, or use the toolbar above the keyboard.",ago:"2m",pin:true},
+  {t:"Groceries",p:"Oat milk, lemons, sourdough, coffee beans, feta, cherry tomatoes",ago:"Yesterday",pin:true},
+  {t:"Lisbon trip",p:"Flights booked for 12 Dec. Hotel is near Príncipe Real. Still to sort: tram pass, Sintra day trip.",ago:"3h"},
+  {t:"Book notes: Deep Work",p:"Shallow work is logistical-style work, often done while distracted. Schedule deep blocks first.",ago:"2d"},
+  {t:"Standup 18 Nov",p:"Done: import flow and snackbar copy. Next: export as .md, delete confirmation dialog.",ago:"5d"},
+  {t:"Gift ideas",p:"Mum: ceramics class voucher. Leo: Lego Technic set. Sam: a good chef's knife.",ago:"1w"},
+  {t:"Kotlin snippets",p:"Flow.debounce for search input, stateIn with WhileSubscribed(5000), collectAsStateWithLifecycle.",ago:"3w"}
+];
+const WELCOME=`Marky keeps your notes as **plain Markdown**. Type the syntax yourself, or use the toolbar above the keyboard.
+
+## Try it
+- [x] Open this note
+- [ ] Tick this box in preview
+- [ ] Switch to *edit mode* and look at the source
+
+## Formatting
+1. Wrap words in \`**\` for **bold**
+2. Wrap words in \`*\` for *italic*
+3. Start a line with \`>\` for a quote
+
+> Your notes stay on this device unless you export them.
+
+\`\`\`kotlin
+val note = Note(title = "Ideas")
+repository.save(note) // autosaved
+\`\`\`
+
+Learn the full syntax at [commonmark.org](https://commonmark.org/help/).`;
+const LISBON=`Flights booked for **12 Dec**. Hotel is near *Príncipe Real*.
+
+## To sort
+- [x] Book flights
+- [ ] Tram 28 pass
+- [ ] Sintra day trip
+
+> Pastéis de Belém opens at 8am. Go early.
+
+Metro map: [metrolisboa.pt](https://www.metrolisboa.pt)`;
+const NODES=[
+  {n:"Headings",w:"Three levels. The title field sits above the body, so most notes start at level 2.",md:"# Lisbon trip\n## To sort\n### Day 2"},
+  {n:"Paragraph and emphasis",w:"Bold, italic and inline code inside running text.",md:"Pack **light**. The *early* tram is quieter, and the stop is `Martim Moniz`."},
+  {n:"Web link",w:"Opens in the browser from preview.",md:"Check opening times on [visitlisboa.com](https://www.visitlisboa.com)."},
+  {n:"Bulleted list",w:"Nested items indent one level.",md:"- Oat milk\n- Lemons\n  - Unwaxed if possible\n- Sourdough"},
+  {n:"Numbered list",w:"Numbers come from the Markdown, so reordering in the source renumbers here.",md:"1. Export the note as .md\n2. Open it in any editor\n3. Import it back"},
+  {n:"Checklist",w:"Tap to tick in preview. The source updates to [x].",md:"- [x] Book flights\n- [ ] Tram 28 pass\n- [ ] Sintra day trip"},
+  {n:"Quote",w:"One or more lines starting with >.",md:"> Writing comes first. Nothing should ask you to organize before you write."},
+  {n:"Code block",w:"Fenced with three backticks and an optional language. Scrolls sideways instead of wrapping.",md:"```kotlin\nfun greet(name: String) {\n    println(\"Hello, $name\") // from Marky\n}\n```"}
+];
+
+/* ---------- tiny markdown renderer (covers the spec's node set) ---------- */
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function inline(s){
+  const codes=[];
+  s=esc(s).replace(/`([^`]+)`/g,(_,c)=>{codes.push(c);return "\u0000"+(codes.length-1)+"\u0000";});
+  s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+     .replace(/\*([^*]+)\*/g,"<em>$1</em>")
+     .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a class="md-link" href="$2" target="_blank" rel="noopener">$1</a>');
+  return s.replace(/\u0000(\d+)\u0000/g,(_,i)=>`<code class="md-ic">${codes[i]}</code>`);
+}
+function hlCode(s){
+  let out="",last=0,m;const re=/("[^"]*")|\b(fun|val|var|return|class|data|if|else|null)\b|(\/\/.*$)/g;
+  while((m=re.exec(s))){out+=esc(s.slice(last,m.index));out+=`<span class="${m[1]?"tk-s":m[2]?"tk-k":"tk-c"}">${esc(m[0])}</span>`;last=re.lastIndex;}
+  return out+esc(s.slice(last));
+}
+const TASK=/^\s*- \[( |x)\] (.*)/, ITEM=/^(\s*)([-*]|\d+\.) (.*)/;
+function parseList(L,i,indent){
+  const tag=/^\s*\d+\./.test(L[i])?"ol":"ul";let html="";
+  while(i<L.length){
+    const m=L[i].match(ITEM); if(!m||TASK.test(L[i])) break;
+    const ind=m[1].length; if(ind<indent) break;
+    if(ind>indent){const r=parseList(L,i,ind);html=html.replace(/<\/li>$/,r[0]+"</li>");i=r[1];continue;}
+    html+=`<li>${inline(m[3])}</li>`;i++;
+  }
+  return [`<${tag} class="md-list md-${tag}">${html}</${tag}>`,i];
+}
+function render(md){
+  const L=md.split("\n");let i=0,out="",m;
+  while(i<L.length){
+    const l=L[i];
+    if(!l.trim()){i++;continue;}
+    if(l.startsWith("```")){
+      const lang=l.slice(3).trim()||"text",buf=[];i++;
+      while(i<L.length&&!L[i].startsWith("```")) buf.push(L[i++]); i++;
+      out+=`<div class="md-code"><div class="md-code-head"><span class="md-lang">${esc(lang)}</span><button type="button" class="md-copy">${I.copy}<span>Copy</span></button></div><pre><code>${buf.map(x=>`<span class="ln">${hlCode(x)||" "}</span>`).join("")}</code></pre></div>`;
+      continue;
+    }
+    if((m=l.match(/^(#{1,3}) (.*)/))){const n=m[1].length;out+=`<div class="md-h md-h${n}" role="heading" aria-level="${n+2}"><span class="md-mark">${m[1]}</span>${inline(m[2])}</div>`;i++;continue;}
+    if(l.startsWith(">")){const b=[];while(i<L.length&&L[i].startsWith(">")) b.push(L[i++].replace(/^>\s?/,""));out+=`<blockquote class="md-quote"><p>${inline(b.join(" "))}</p></blockquote>`;continue;}
+    if(TASK.test(l)){let items="";while(i<L.length&&(m=L[i].match(TASK))){const d=m[1]==="x";items+=`<li><button type="button" class="md-task${d?" done":""}" aria-pressed="${d}"><span class="md-box">${I.check}</span><span class="md-task-text">${inline(m[2])}</span></button></li>`;i++;}out+=`<ul class="md-tasks">${items}</ul>`;continue;}
+    if(ITEM.test(l)){const r=parseList(L,i,l.match(ITEM)[1].length);out+=r[0];i=r[1];continue;}
+    const b=[];while(i<L.length&&L[i].trim()&&!/^(#{1,3} |>|```|\s*([-*]|\d+\.) )/.test(L[i])) b.push(L[i++]);
+    out+=`<p class="md-p">${inline(b.join(" "))}</p>`;
+  }
+  return `<div class="md">${out}</div>`;
+}
+/* raw source with muted/accented syntax markers */
+function hlLine(l){
+  if(/^```/.test(l)) return `<span class="mk">${esc(l)}</span>`;
+  let m=l.match(/^(#{1,3} )(.*)/);
+  if(m) return `<span class="mk">${m[1]}</span><span class="hl-h">${esc(m[2])}</span>`;
+  const codes=[];
+  let s=esc(l).replace(/`([^`]+)`/g,(_,c)=>{codes.push(c);return "\u0000"+(codes.length-1)+"\u0000";});
+  s=s.replace(/^(\s*)(- \[[ x]\] |[-*] |\d+\. |&gt; ?)/,'$1<span class="mk">$2</span>');
+  s=s.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g,'$1<span class="mk">*</span><em>$2</em><span class="mk">*</span>');
+  s=s.replace(/\*\*([^*]+)\*\*/g,'<span class="mk">**</span><b>$1</b><span class="mk">**</span>');
+  s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<span class="mk">[</span><span class="hl-link">$1</span><span class="mk">](</span><span class="hl-url">$2</span><span class="mk">)</span>');
+  return s.replace(/\u0000(\d+)\u0000/g,(_,i)=>`<span class="mk">\`</span>${codes[i]}<span class="mk">\`</span>`);
+}
+const source=md=>`<div class="src">${md.split("\n").map(hlLine).join("\n")}</div>`;
+function lisbonSource(){
+  return source(LISBON)
+    .replace("<em>Príncipe Real</em>",'<em><span class="sel">Príncipe Real</span></em>')
+    .replace("Sintra day trip",'Sintra day trip<span class="caret"></span>');
+}
+
+/* ---------- shared pieces ---------- */
+function toolbar(v){
+  const words=v==="reader";
+  const items=[
+    ["Heading",words?"H":'<span style="font-weight:700">H</span>'],
+    ["Bold",words?"B":'<span style="font-weight:800">B</span>'],
+    ["Italic",words?"I":'<span style="font-style:italic;font-family:Georgia,serif">I</span>',1],
+    ["List",words?"List":I.list],["Checklist",words?"Task":I.task],["Quote",words?"Quote":I.quote],
+    ["Code block",words?"Code":I.code],["Link",words?"Link":I.link]];
+  return `<div class="tb" role="toolbar" aria-label="Formatting">${items.map(([l,c,on])=>`<button type="button" aria-label="${l}"${on?' class="on" aria-pressed="true"':""}>${c}</button>`).join("")}</div>`;
+}
+function keyboard(){
+  const r=["qwertyuiop","asdfghjkl","zxcvbnm"];
+  return `<div class="kb" aria-hidden="true">${r.map((row,i)=>`<div class="kb-row">${i===2?'<span class="key w">⇧</span>':""}${[...row].map(c=>`<span class="key">${c}</span>`).join("")}${i===2?'<span class="key w">⌫</span>':""}</div>`).join("")}<div class="kb-row"><span class="key w2">123</span><span class="key space">space</span><span class="key w2">return</span></div></div>`;
+}
+const pinned=NOTES.filter(n=>n.pin), rest=NOTES.filter(n=>!n.pin);
+const AGO_LONG={"2m":"2 min ago","3h":"3 h ago","2d":"2 days ago","5d":"5 days ago","1w":"1 week ago","3w":"3 weeks ago","Yesterday":"Yesterday"};
+
+/* ---------- per-direction screens ---------- */
+const S={
+margin:{
+  list(){
+    const row=n=>`<div class="m-row"><div class="m-row-top">${n.pin?`<span class="m-pin">${I.pin}</span>`:""}<span class="m-row-title clamp1">${n.t}</span><span class="m-ago">${n.ago}</span></div><div class="m-row-prev clamp2">${n.p}</div></div>`;
+    return `<div class="m-top"><div class="m-title">Notes</div><button class="ib" aria-label="Import .md file">${I.import}</button></div>
+    <div class="m-search">${I.search}<span>Search notes</span></div>
+    <div class="scroll"><div class="m-sec">Pinned</div>${pinned.map(row).join("")}<div class="m-sec">Recent</div>${rest.map(row).join("")}</div>
+    <div class="m-bottom"><button class="m-new" type="button">${I.plus}New note</button></div>`;
+  },
+  bar(mode){return `<div class="nbar"><button class="ib" aria-label="Back">${I.back}</button><div class="m-seg"><span class="${mode==="edit"?"on":""}">Edit</span><span class="${mode==="edit"?"":"on"}">Preview</span></div><span class="sp"></span><button class="ib act" aria-label="Unpin">${I.pin}</button><button class="ib" aria-label="More actions">${I.more}</button></div>`;},
+  meta:"Edited 2m ago · 74 words"
+},
+tonal:{
+  list(){
+    const card=n=>`<div class="t-card"><div class="t-card-title clamp2">${n.t}</div><div class="t-card-prev clamp2">${n.p}</div><div class="t-card-ago">${AGO_LONG[n.ago]}</div></div>`;
+    return `<div class="t-top"><div class="t-searchbar">${I.search}<span>Search notes</span></div><button class="t-ib" aria-label="Import .md file">${I.import}</button></div>
+    <div class="scroll t-scroll"><div class="t-sec">${I.pin}Pinned</div><div class="t-pins">${pinned.map(card).join("")}</div><div class="t-sec">Recent</div>${rest.map(card).join("")}</div>
+    <button class="t-fab" type="button">${I.pencil}New note</button>`;
+  },
+  bar(mode){return `<div class="nbar"><button class="ib" aria-label="Back">${I.back}</button><span class="sp"></span><div class="t-seg"><span class="${mode==="edit"?"on":""}" title="Edit">${I.pencil}</span><span class="${mode==="edit"?"":"on"}" title="Preview">${I.eye}</span></div><button class="ib act" aria-label="Unpin">${I.pin}</button><button class="ib" aria-label="More actions">${I.more}</button></div>`;},
+  meta:"Edited 2 min ago"
+},
+reader:{
+  list(){
+    const e=n=>`<div class="r-entry">${n.pin?'<span class="r-pinned">Pinned</span>':""}<div class="r-entry-top"><span class="r-entry-title">${n.t}</span><span class="r-ago">${n.ago}</span></div><div class="r-prev clamp2">${n.p}</div></div>`;
+    return `<div class="r-top"><button class="ib" aria-label="Import .md file">${I.import}</button><button class="ib" aria-label="Search">${I.search}</button></div>
+    <div class="scroll r-scroll"><div class="r-head"><div class="r-eyebrow">Monday 23 November</div><div class="r-title">Notes</div><div class="r-count">7 notes, 2 pinned</div></div>${NOTES.map(e).join("")}</div>
+    <button class="r-write" type="button">${I.pencil}Write</button>`;
+  },
+  bar(mode){return `<div class="nbar"><button class="r-back" type="button">${I.back}Notes</button><span class="sp"></span><button class="r-mode" type="button">${mode==="edit"?"Read":"Edit"}</button><button class="ib act" aria-label="Unpin">${I.pin}</button><button class="ib" aria-label="More actions">${I.more}</button></div>`;},
+  meta:"Edited 2 minutes ago · 1 min read"
+}};
+
+function phone(inner){return `<div class="phone"><div class="screen">${STATUS}${inner}</div></div>`;}
+function noteScreen(v){
+  return phone(`${S[v].bar("preview")}<div class="scroll"><div class="nbody"><div class="ntitle">Welcome to Marky</div><div class="nmeta">${S[v].meta}</div>${render(WELCOME)}</div></div>`);
+}
+function editScreen(v){
+  return phone(`${S[v].bar("edit")}<div class="scroll"><div class="nbody"><div class="ntitle">Lisbon trip</div><div class="nmeta">Saved · ${S[v].meta.split("·")[0].replace("2 minutes","just now").replace("2 min","just now").replace("2m","just now")}</div>${lisbonSource()}</div></div>${toolbar(v)}${keyboard()}`);
+}
+function desktop(v){
+  const row=(n,i)=>`<div class="drow${i===0?" sel":""}"><div class="drow-top">${n.pin&&v!=="tonal"?`<span class="m-pin" style="color:var(--accent)">${I.pin.replace('class="ic"','class="ic" style="width:13px;height:13px"')}</span>`:""}<span class="drow-title clamp1">${n.t}</span><span class="drow-ago">${n.ago}</span></div><div class="drow-prev clamp1">${n.p}</div></div>`;
+  const newBtn=v==="tonal"?`<button class="t-newbtn" type="button">${I.plus}New note</button>`:`<button class="ib" aria-label="New note">${I.plus}</button>`;
+  const side=`<aside class="side"><div class="side-head"><span class="side-title">${v==="reader"?"Notes":"Marky"}</span><button class="ib" aria-label="Import .md file">${I.import}</button>${newBtn}</div>
+    <div class="side-search">${I.search}<span>Search notes</span><kbd>Ctrl K</kbd></div>
+    <div class="side-list"><div class="side-label">Pinned</div>${pinned.map(row).join("")}<div class="side-label">Recent</div>${rest.map((n,i)=>row(n,i+1)).join("")}</div></aside>`;
+  const actions=`<button class="ib act" aria-label="Unpin">${I.pin}</button><button class="ib" aria-label="Export as .md">${I.export}</button><button class="ib" aria-label="Delete note">${I.trash}</button>`;
+  let bar,body;
+  if(v==="margin"){
+    bar=`<div class="m-seg" style="margin-left:0"><span>Edit</span><span>Preview</span><span class="on">Split</span></div><span class="sp"></span>${actions}`;
+    body=`<div class="split"><div class="src-pane">${toolbar(v)}${source(WELCOME)}</div><div class="pv"><div class="ntitle">Welcome to Marky</div><div class="nmeta">${S[v].meta}</div>${render(WELCOME)}</div></div>`;
+  }else{
+    const seg=v==="tonal"?`<div class="t-seg"><span title="Edit">${I.pencil}</span><span class="on" title="Preview">${I.eye}</span></div>`:`<button class="r-mode" type="button">Edit</button>`;
+    bar=`${seg}<span class="sp"></span>${actions}`;
+    body=`<div class="main-col"><div class="ntitle">Welcome to Marky</div><div class="nmeta">${S[v].meta}</div>${render(WELCOME)}</div>`;
+  }
+  return `<div class="desk"><div class="win-bar"><i></i><i></i><i></i><span>Marky</span></div><div class="win-body">${side}<main class="main"><div class="main-bar">${bar}</div><div class="main-body">${body}</div></main></div></div>`;
+}
+function specimen(){
+  return `<div class="spec"><div class="spec-head"><div>Node</div><div>Edit mode</div><div>Preview</div></div>${NODES.map(x=>`<div class="spec-row"><div><div class="spec-name">${x.n}</div><div class="spec-why">${x.w}</div></div><div class="spec-src">${source(x.md)}</div><div>${render(x.md)}</div></div>`).join("")}</div>`;
+}
+
+/* ---------- directions ---------- */
+const D=[
+  {k:"margin",letter:"A",name:"Margin",tag:"Syntax stays in sight. Quiet, precise, for people who already think in Markdown.",sw:["#FFFFFF","#F4F6F9","#14171C","#2F5BEA"],
+   about:["A utility-first look. Preview keeps the heading markers faintly visible in the margin, so reading and writing feel like one document instead of two.","Hairline rows instead of cards, a single cobalt accent, and monospace for anything technical: timestamps, code, section labels. On desktop, wide windows can show edit and preview side by side."],
+   traits:[["Type","IBM Plex Sans, IBM Plex Mono"],["Color","Cool greys, one cobalt accent"],["Shape","Hairlines, 4 to 8 px radii, no cards"],["Feels like","A good code editor that learned typography"],["Build cost","Low. Mostly text styles and dividers."]]},
+  {k:"tonal",letter:"B",name:"Tonal",tag:"Soft, friendly Material 3. Rounded cards, tonal surfaces, a big New note button.",sw:["#F5FAF8","#E7F0EC","#0F6B5A","#FFE2CF"],
+   about:["The closest to native Android and the easiest to build from Material 3 components in Compose Multiplatform. Pinned notes get their own warm apricot cards; everything else sits on sea-green tonal surfaces.","Checklists, quotes and code each become a rounded container, so the interactive parts of a note are easy to spot and easy to hit with a thumb."],
+   traits:[["Type","Figtree, JetBrains Mono"],["Color","Sea-green primary, apricot for pinned"],["Shape","22 px cards, pill controls, FAB"],["Feels like","Google Keep, but for Markdown"],["Build cost","Lowest. Maps almost 1:1 to Material 3."]]},
+  {k:"reader",letter:"C",name:"Reader",tag:"Reading is the reward. A book-like preview with highlighter accents.",sw:["#FFFFFF","#F3F3F0","#1A1A19","#FFDD33"],
+   about:["Preview reads like a well-set page: Literata serif, generous leading, section headings as small spaced capitals. Links and pins use a highlighter-yellow stroke instead of a brand color.","Edit mode switches to a calm monospace page with faded syntax. Controls use words where words are clearer (Edit, Read, Write) and almost nothing is boxed in; type and white space do the work."],
+   traits:[["Type","Literata, Instrument Sans, DM Mono"],["Color","Ink on white, highlighter yellow"],["Shape","Almost no containers, rules between items"],["Feels like","A notebook crossed with a book page"],["Build cost","Medium. Serif rendering and custom text decorations need care."]]}
+];
+
+/* ---------- state + rendering ---------- */
+let current="margin";
+let mode=(()=>{const t=document.documentElement.getAttribute("data-theme");if(t==="dark"||t==="light")return t;try{return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}catch(e){return "light";}})();
+
+const dirsEl=document.getElementById("dirs"), stage=document.getElementById("stage");
+dirsEl.innerHTML=D.map(d=>`<button class="dir" role="tab" id="tab-${d.k}" aria-controls="stage" data-k="${d.k}"><span class="dir-k">Direction ${d.letter}</span><span class="dir-n">${d.name}</span><span class="dir-t">${d.tag}</span><span class="dir-sw">${d.sw.map(c=>`<i style="background:${c}"></i>`).join("")}</span></button>`).join("");
+
+function draw(){
+  const d=D.find(x=>x.k===current);
+  dirsEl.querySelectorAll(".dir").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.k===current)));
+  stage.innerHTML=`
+  <div class="bar"><h2>${d.letter}. ${d.name}</h2>
+    <div class="modes"><span id="mode-label">Mockup theme</span><div class="seg" role="group" aria-labelledby="mode-label"><button type="button" data-mode="light" aria-pressed="${mode==="light"}">Light</button><button type="button" data-mode="dark" aria-pressed="${mode==="dark"}">Dark</button></div></div></div>
+  <div class="v ${d.k}" data-mode="${mode}">
+    <div class="intro"><div>${d.about.map(p=>`<p>${p}</p>`).join("")}<div class="swatches" id="swatches"></div></div>
+      <dl class="traits">${d.traits.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl></div>
+    <div class="sec-h">Phone · Android and iOS</div>
+    <div class="phones">
+      <figure>${phone(S[d.k].list())}<figcaption>Notes list (home)</figcaption></figure>
+      <figure>${noteScreen(d.k)}<figcaption>Note in preview. Tick the checklist.</figcaption></figure>
+      <figure>${editScreen(d.k)}<figcaption>Note in edit mode, “Príncipe Real” selected</figcaption></figure>
+    </div>
+    <div class="sec-h">Desktop · JVM</div>
+    <div class="desk-wrap">${desktop(d.k)}</div>
+    ${d.k==="margin"?'<p class="note">Split view is an extra idea for wide windows. The spec only requires switching between edit and preview.</p>':""}
+    <div class="sec-h">Markdown nodes</div>
+    ${specimen()}
+  </div>`;
+  const v=stage.querySelector(".v"), cs=getComputedStyle(v);
+  const sw=[["Background","--bg"],["Surface","--surface"],["Text","--text"],["Accent","--accent"],[d.k==="reader"?"Highlighter":"Accent soft",d.k==="reader"?"--mark-strong":"--accent-soft"]];
+  stage.querySelector("#swatches").innerHTML=sw.map(([l,t])=>{const c=cs.getPropertyValue(t).trim();return `<span class="swatch"><i style="background:var(${t})"></i><span>${l}<br><code>${c}</code></span></span>`;}).join("");
+}
+function fromHash(){const h=(location.hash||"").slice(1);current=D.some(d=>d.k===h)?h:"margin";draw();}
+
+dirsEl.addEventListener("click",e=>{const b=e.target.closest(".dir");if(!b)return;if(location.hash==="#"+b.dataset.k){draw();}else{location.hash=b.dataset.k;}});
+dirsEl.addEventListener("keydown",e=>{if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;const i=D.findIndex(d=>d.k===current);const n=D[(i+(e.key==="ArrowRight"?1:D.length-1))%D.length];location.hash=n.k;document.getElementById("tab-"+n.k).focus();});
+stage.addEventListener("click",e=>{
+  const m=e.target.closest("[data-mode]");
+  if(m&&m.tagName==="BUTTON"){mode=m.dataset.mode;draw();return;}
+  const t=e.target.closest(".md-task");
+  if(t){const on=!t.classList.contains("done");t.classList.toggle("done",on);t.setAttribute("aria-pressed",String(on));return;}
+  const c=e.target.closest(".md-copy");
+  if(c){const code=c.closest(".md-code").querySelector("code").innerText;const label=c.querySelector("span");
+    const done=()=>{label.textContent="Copied";setTimeout(()=>{label.textContent="Copy";},1400);};
+    try{navigator.clipboard.writeText(code).then(done,()=>{label.textContent="Select and copy";});}catch(err){label.textContent="Select and copy";}}
+});
+addEventListener("hashchange",fromHash);
+fromHash();
+})();
+</script>

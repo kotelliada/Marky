@@ -1,0 +1,173 @@
+/*
+  Marky · Margin design tokens (v1.0)
+  Single source of truth for color, type, spacing, radius, elevation, motion and sizes.
+  px values map 1:1 to dp (Android, Compose) and pt (iOS). Font sizes map to sp.
+
+  Theming:
+  - :root and .theme-light   light values (default)
+  - prefers-color-scheme     dark values unless data-theme="light" is set on <html>
+  - [data-theme="dark"], .theme-dark   dark values, also usable on any element to force a theme locally
+*/
+
+:root, .theme-light {
+  color-scheme: light;
+
+  /* Surfaces */
+  --mk-bg: #FFFFFF;
+  --mk-surface: #F4F6F9;
+  --mk-surface-2: #E9EDF3;
+  --mk-float: #FFFFFF;
+  --mk-border: #E2E6EC;
+  --mk-border-strong: #C3CAD5;
+
+  /* Text */
+  --mk-text: #14171C;
+  --mk-text-2: #4A5363;
+  --mk-text-3: #667080;
+  --mk-text-disabled: #A3ABB8;
+  --mk-marker: #9AA3B1;
+
+  /* Accent (cobalt) */
+  --mk-accent: #2F5BEA;
+  --mk-accent-hover: #2850D6;
+  --mk-accent-pressed: #2145BF;
+  --mk-on-accent: #FFFFFF;
+  --mk-accent-soft: #E7EDFF;
+  --mk-on-accent-soft: #1D3FB8;
+  --mk-focus: #2F5BEA;
+  --mk-selection: #CAD6FB;
+
+  /* Danger (delete only) */
+  --mk-danger: #C8322B;
+  --mk-danger-hover: #B12B25;
+  --mk-danger-pressed: #99241F;
+  --mk-on-danger: #FFFFFF;
+  --mk-danger-soft: #FDECEA;
+
+  /* Feedback */
+  --mk-highlight: #FFE27A;
+  --mk-on-highlight: #14171C;
+  --mk-inverse: #1E232B;
+  --mk-on-inverse: #F1F3F6;
+  --mk-inverse-accent: #A9BDFF;
+  --mk-scrim: #0E11167A;
+
+  /* State layers (painted over a surface) */
+  --mk-state-hover: #14171C0A;
+  --mk-state-pressed: #14171C17;
+
+  /* Code */
+  --mk-code-bg: #F6F8FA;
+  --mk-code-text: #1E2530;
+  --mk-code-keyword: #B4236A;
+  --mk-code-string: #1C7C4A;
+  --mk-code-comment: #667080;
+  --mk-code-number: #9A5B00;
+
+  --mk-shadow-color: #0E11162E;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --mk-bg: #0E1116; --mk-surface: #161A21; --mk-surface-2: #1F2530; --mk-float: #1A1F27; --mk-border: #262D38; --mk-border-strong: #3A4352;
+    --mk-text: #E6E9EF; --mk-text-2: #A9B1BF; --mk-text-3: #8A93A3; --mk-text-disabled: #4E5766; --mk-marker: #5A6473;
+    --mk-accent: #7C9BFF; --mk-accent-hover: #94AEFF; --mk-accent-pressed: #6888F5; --mk-on-accent: #0B1020; --mk-accent-soft: #1B2442; --mk-on-accent-soft: #B4C5FF; --mk-focus: #7C9BFF; --mk-selection: #2C3A66;
+    --mk-danger: #FF7A70; --mk-danger-hover: #FF948C; --mk-danger-pressed: #F0625A; --mk-on-danger: #1A0705; --mk-danger-soft: #3A1715;
+    --mk-highlight: #6B5714; --mk-on-highlight: #FFF6D6; --mk-inverse: #E6E9EF; --mk-on-inverse: #14171C; --mk-inverse-accent: #2549C9; --mk-scrim: #000000A3;
+    --mk-state-hover: #E6E9EF0F; --mk-state-pressed: #E6E9EF1F;
+    --mk-code-bg: #12161C; --mk-code-text: #D6DCE6; --mk-code-keyword: #F08BC0; --mk-code-string: #7FD3A3; --mk-code-comment: #8A93A3; --mk-code-number: #F2B366;
+    --mk-shadow-color: #00000099;
+  }
+}
+:root[data-theme="dark"], .theme-dark {
+  color-scheme: dark;
+  --mk-bg: #0E1116; --mk-surface: #161A21; --mk-surface-2: #1F2530; --mk-float: #1A1F27; --mk-border: #262D38; --mk-border-strong: #3A4352;
+  --mk-text: #E6E9EF; --mk-text-2: #A9B1BF; --mk-text-3: #8A93A3; --mk-text-disabled: #4E5766; --mk-marker: #5A6473;
+  --mk-accent: #7C9BFF; --mk-accent-hover: #94AEFF; --mk-accent-pressed: #6888F5; --mk-on-accent: #0B1020; --mk-accent-soft: #1B2442; --mk-on-accent-soft: #B4C5FF; --mk-focus: #7C9BFF; --mk-selection: #2C3A66;
+  --mk-danger: #FF7A70; --mk-danger-hover: #FF948C; --mk-danger-pressed: #F0625A; --mk-on-danger: #1A0705; --mk-danger-soft: #3A1715;
+  --mk-highlight: #6B5714; --mk-on-highlight: #FFF6D6; --mk-inverse: #E6E9EF; --mk-on-inverse: #14171C; --mk-inverse-accent: #2549C9; --mk-scrim: #000000A3;
+  --mk-state-hover: #E6E9EF0F; --mk-state-pressed: #E6E9EF1F;
+  --mk-code-bg: #12161C; --mk-code-text: #D6DCE6; --mk-code-keyword: #F08BC0; --mk-code-string: #7FD3A3; --mk-code-comment: #8A93A3; --mk-code-number: #F2B366;
+  --mk-shadow-color: #00000099;
+}
+.theme-light, .theme-dark { background: var(--mk-bg); color: var(--mk-text); }
+
+/* Theme-independent tokens */
+:root {
+  /* Families */
+  --mk-font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mk-font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Type styles: weight size/line-height family. Tracking lives in the .mk-type-* classes. */
+  --mk-type-display:  600 26px/32px var(--mk-font-sans);
+  --mk-type-title-l:  600 24px/30px var(--mk-font-sans);
+  --mk-type-title-m:  600 18px/24px var(--mk-font-sans);
+  --mk-type-title-s:  600 15px/22px var(--mk-font-sans);
+  --mk-type-body-l:   400 15px/24px var(--mk-font-sans);
+  --mk-type-body-m:   400 14px/20px var(--mk-font-sans);
+  --mk-type-body-s:   400 13px/19px var(--mk-font-sans);
+  --mk-type-label-l:  600 15px/20px var(--mk-font-sans);
+  --mk-type-label-m:  500 14px/20px var(--mk-font-sans);
+  --mk-type-control:  500 12px/16px var(--mk-font-mono);
+  --mk-type-caption:  400 12px/16px var(--mk-font-mono);
+  --mk-type-overline: 500 10.5px/14px var(--mk-font-mono);
+  --mk-type-code:     400 12.5px/20px var(--mk-font-mono);
+  --mk-type-editor:   400 14px/24px var(--mk-font-mono);
+
+  /* Spacing (4 px grid) */
+  --mk-space-1: 4px;
+  --mk-space-2: 8px;
+  --mk-space-3: 12px;
+  --mk-space-4: 16px;
+  --mk-space-5: 20px;
+  --mk-space-6: 24px;
+  --mk-space-8: 32px;
+  --mk-space-10: 40px;
+
+  /* Radius */
+  --mk-radius-xs: 4px;
+  --mk-radius-sm: 6px;
+  --mk-radius-md: 8px;
+  --mk-radius-lg: 12px;
+
+  /* Elevation: Margin uses hairlines; shadows are reserved for things that float */
+  --mk-shadow-float: 0 12px 32px -8px var(--mk-shadow-color), 0 2px 6px -2px var(--mk-shadow-color);
+
+  /* Motion */
+  --mk-dur-fast: 120ms;
+  --mk-dur-base: 200ms;
+  --mk-dur-slow: 320ms;
+  --mk-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Sizes */
+  --mk-size-touch: 48px;
+  --mk-size-icon: 20px;
+  --mk-size-icon-sm: 16px;
+  --mk-size-appbar: 56px;
+  --mk-size-toolbar: 48px;
+  --mk-size-btn-l: 44px;
+  --mk-size-btn-m: 36px;
+  --mk-size-iconbtn: 40px;
+  --mk-size-field: 40px;
+  --mk-size-row-min: 72px;
+  --mk-gutter-phone: 20px;
+  --mk-gutter-desktop: 40px;
+  --mk-measure: 680px;
+}
+
+/* Type style classes */
+.mk-type-display  { font: var(--mk-type-display);  letter-spacing: -0.02em; }
+.mk-type-title-l  { font: var(--mk-type-title-l);  letter-spacing: -0.02em; }
+.mk-type-title-m  { font: var(--mk-type-title-m);  letter-spacing: -0.01em; }
+.mk-type-title-s  { font: var(--mk-type-title-s); }
+.mk-type-body-l   { font: var(--mk-type-body-l); }
+.mk-type-body-m   { font: var(--mk-type-body-m); }
+.mk-type-body-s   { font: var(--mk-type-body-s); }
+.mk-type-label-l  { font: var(--mk-type-label-l); }
+.mk-type-label-m  { font: var(--mk-type-label-m); }
+.mk-type-control  { font: var(--mk-type-control); }
+.mk-type-caption  { font: var(--mk-type-caption); }
+.mk-type-overline { font: var(--mk-type-overline); letter-spacing: 0.14em; text-transform: uppercase; }
+.mk-type-code     { font: var(--mk-type-code); }
+.mk-type-editor   { font: var(--mk-type-editor); }
