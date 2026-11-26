@@ -123,16 +123,14 @@ The skills mention `kmp-integration-testing`, `kmp-ui-testing`, `kmp-kover-setup
 
 ## 6. Project map: where things live and where they go
 
-> **Current state:** the repo still has the KMP wizard layout (`:shared`, `:androidApp`, `:desktopApp`, `iosApp/`). **The first pending task is migrating to the target layout below** (per `kmp-module-structure`). Until then, `:shared` stands in for `:composeApp`.
-
-Target layout:
+Layout (everything exists except `:core:markdown`, which is created when first needed; feature modules start as empty skeletons):
 
 ```
 :androidApp                   Thin Android shell: Activity, manifest. Depends on :composeApp only.
 :desktopApp                   Thin desktop shell: main(), Window. Depends on :composeApp only.
 iosApp/                       Xcode shell consuming the ComposeApp framework.
 :composeApp                   App(), NavHost, Koin assembly, MarkyTheme applied. Wires everything.
-build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application).
+build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application.compose).
 :core:domain                  Result/DataError, Note model, NoteRepository interface, Clock abstraction.
 :core:data                    Okio note store (<id>.md + notes-index.json), file helpers, sample notes.
 :core:presentation            UiText, ObserveAsEvents, expect/actual import/export pickers.
@@ -141,7 +139,14 @@ build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.
 :feature:<name>:domain|data|presentation
 ```
 
-Proposed features (confirm before creating): `notes` (list + import), `note` (edit, preview, export, delete), `search`.
+Features: `notes` (list + import), `note` (edit, preview, export, delete), `search`. Ask before adding another.
+
+Convention plugins (`build-logic/convention`, IDs `io.kotelliada.marky.convention.*`, aliases `libs.plugins.convention.*`):
+- `kmp.library`: `core:domain`, `core:data`, every feature `domain` and `data`. Targets: Android (KMP library + host tests), Desktop `jvm("desktop")`, `iosArm64`, `iosSimulatorArm64`.
+- `cmp.library`: `core:presentation`, `core:designsystem`. Adds Compose without Material 3, so **only `:core:designsystem` declares `material3`**, which enforces section 3 at build level.
+- `cmp.feature`: every feature `presentation`. Adds `core:domain`/`core:presentation`/`core:designsystem`, Koin, navigation, lifecycle and savedstate.
+- `cmp.application`: `:composeApp` (iOS framework `ComposeApp`).
+- `android.application.compose`: `:androidApp`.
 
 Rules:
 - Features **never** depend on each other. They navigate through callbacks wired in `:composeApp`.
@@ -204,4 +209,4 @@ A unit of work is done only when **all** of the following hold:
 | One module's tests | `./gradlew :<module>:testAndroidHostTest`, `:<module>:desktopTest`, `:<module>:iosSimulatorArm64Test` |
 | Coverage report | `./gradlew koverHtmlReport` (once Kover is set up) |
 
-Before the migration, replace `:composeApp` with `:shared`, and `desktopTest` with `jvmTest`.
+On an Intel Mac, `iosSimulatorArm64Test` is disabled by Kotlin/Native (host can't run arm64). iOS tests then run only on Apple Silicon.

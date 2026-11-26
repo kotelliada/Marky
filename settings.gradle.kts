@@ -1,6 +1,8 @@
 rootProject.name = "Marky"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             mavenContent {
@@ -33,4 +35,21 @@ plugins {
 
 include(":androidApp")
 include(":desktopApp")
-include(":shared")
+include(":composeApp")
+
+include(":core:domain")
+include(":core:data")
+include(":core:presentation")
+include(":core:designsystem")
+
+include(":feature:notes:domain")
+include(":feature:notes:data")
+include(":feature:notes:presentation")
+
+include(":feature:note:domain")
+include(":feature:note:data")
+include(":feature:note:presentation")
+
+include(":feature:search:domain")
+include(":feature:search:data")
+include(":feature:search:presentation")

@@ -1,0 +1,55 @@
+plugins {
+    `kotlin-dsl`
+}
+
+group = "io.kotelliada.marky.buildlogic"
+
+dependencies {
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.compose.compiler.gradlePlugin)
+    compileOnly(libs.compose.multiplatform.gradlePlugin)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
+    }
+}
+
+gradlePlugin {
+    plugins {
+        register("kmpLibrary") {
+            id = libs.plugins.convention.kmp.library.get().pluginId
+            implementationClass = "KmpLibraryConventionPlugin"
+        }
+        register("cmpLibrary") {
+            id = libs.plugins.convention.cmp.library.get().pluginId
+            implementationClass = "CmpLibraryConventionPlugin"
+        }
+        register("cmpFeature") {
+            id = libs.plugins.convention.cmp.feature.get().pluginId
+            implementationClass = "CmpFeatureConventionPlugin"
+        }
+        register("cmpApplication") {
+            id = libs.plugins.convention.cmp.application.get().pluginId
+            implementationClass = "CmpApplicationConventionPlugin"
+        }
+        register("androidApplicationCompose") {
+            id = libs.plugins.convention.android.application.compose.get().pluginId
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
+    }
+}
