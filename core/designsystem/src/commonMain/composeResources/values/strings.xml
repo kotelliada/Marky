@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Copy owned by Margin components (design-system.html "Writing for Marky" and marky.js). -->
+    <string name="untitled">Untitled</string>
+    <string name="no_text_yet">No text yet</string>
+    <string name="pinned">Pinned</string>
+    <string name="search_notes">Search notes</string>
+    <string name="clear_search">Clear search</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
+
+    <!-- Formatting toolbar -->
+    <string name="formatting">Formatting</string>
+    <string name="tool_heading">Heading</string>
+    <string name="tool_bold">Bold</string>
+    <string name="tool_italic">Italic</string>
+    <string name="tool_bulleted_list">Bulleted list</string>
+    <string name="tool_numbered_list">Numbered list</string>
+    <string name="tool_checklist">Checklist</string>
+    <string name="tool_quote">Quote</string>
+    <string name="tool_code_block">Code block</string>
+    <string name="tool_link">Link</string>
+
+    <!-- Shortcut key names (Windows, Linux). macOS and iOS use the symbols in MarkyShortcut. -->
+    <string name="key_ctrl">Ctrl</string>
+    <string name="key_shift">Shift</string>
+    <string name="key_backspace">Backspace</string>
+    <string name="key_esc">Esc</string>
+</resources>
