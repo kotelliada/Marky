@@ -10,3 +10,9 @@ kotlin {
         }
     }
 }
+
+compose.resources {
+    // Fonts, strings and icons stay internal; features reach them through Marky components.
+    packageOfResClass = "io.kotelliada.marky.core.designsystem.resources"
+    publicResClass = false
+}
