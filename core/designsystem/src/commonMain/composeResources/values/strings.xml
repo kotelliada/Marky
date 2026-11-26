@@ -8,6 +8,7 @@
     <string name="clear_search">Clear search</string>
     <string name="copy">Copy</string>
     <string name="copied">Copied</string>
+    <string name="write_in_markdown">Write in Markdown…</string>
 
     <!-- Formatting toolbar -->
     <string name="formatting">Formatting</string>
