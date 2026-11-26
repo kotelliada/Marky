@@ -39,3 +39,12 @@ I want to generate an Agents.md file as the system prompt, along with a Claude.m
 
 Use the KMP module structure skill in order to set up the very initial structure, module skeleton, and possibly package structure for this project, and then make sure to
   implement the project-wide utility already. I am talking about things like the result wrapper, observe as events, or UI text.
+
+# Creating design system in the project
+
+Let's next build the entire design system. This means:
+  - add theme definition
+  - adding the colors
+  - the icons as image vectors that we can really reference in Compose
+  - of course, all the UI components that come from the design system UI we have created in the index.html file
+  - Do not forget to implement previews for Composables so that every state is covered by previews
