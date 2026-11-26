@@ -148,6 +148,8 @@ Convention plugins (`build-logic/convention`, IDs `io.kotelliada.marky.conventio
 - `cmp.application`: `:composeApp` (iOS framework `ComposeApp`).
 - `android.application.compose`: `:androidApp`.
 
+Project-wide utilities: `Result`/`EmptyResult`/`Error`/`DataError` (plus `map`, `onSuccess`, `onFailure`, `asEmptyResult`) live in `core:domain` (`io.kotelliada.marky.core.domain.util`). `UiText` and `ObserveAsEvents` live in `core:presentation` (`io.kotelliada.marky.core.presentation.util`). `DataError` has only `Local`, because there is no backend. `DataError.toUiText()` is added once a feature needs it and the design system has the copy.
+
 Rules:
 - Features **never** depend on each other. They navigate through callbacks wired in `:composeApp`.
 - Code lives in its feature until **two or more** features need it, then it moves to the right `core` module.
