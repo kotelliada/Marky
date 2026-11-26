@@ -35,3 +35,7 @@ I want to generate an Agents.md file as the system prompt, along with a Claude.m
   skills. And that is then something we agree on together. What I can already say is that this is a Kotlin Multiplatform project and for the UI we want to use Compose
   Multiplatform and for Markdown parsing we want to use the official Jetbrain Markdown parsing library.
 
+# Project structure & Project wide utility setup
+
+Use the KMP module structure skill in order to set up the very initial structure, module skeleton, and possibly package structure for this project, and then make sure to
+  implement the project-wide utility already. I am talking about things like the result wrapper, observe as events, or UI text.
