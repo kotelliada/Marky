@@ -68,8 +68,8 @@ Adding any library not listed here requires the user's agreement first.
 | Presentation | JetBrains lifecycle: `lifecycle-viewmodel`, `lifecycle-viewmodel-compose`, `lifecycle-runtime-compose`, `lifecycle-viewmodel-savedstate`, `savedstate` |
 | Serialization | kotlinx.serialization (nav routes) |
 | Async | kotlinx.coroutines + Flow |
-| Storage | **Room (KMP)** with `sqlite-bundled` (`BundledSQLiteDriver`) and KSP, in `:core:database`. One `notes` table: `id, title, body` (raw Markdown), `pinned, createdAt, editedAt`. Import/export still read and write one plain `.md` file. |
-| Search | An `@Fts4(contentEntity = NoteEntity::class)` table over `title` and `body` (`unicode61` tokenizer), queried with `MATCH`. SQL ranks title matches above body matches; snippets come from FTS `snippet()` with highlight markers. Escaping the user's query for `MATCH` and turning snippet markers into highlight ranges are pure Kotlin. |
+| Storage | **Room (KMP)** with `sqlite-bundled` (`BundledSQLiteDriver`) and KSP, in `:core:database`. One `notes` table: `id` (`Long`, the rowid), `title, body` (raw Markdown), `bodyText` (body as plain text via `:core:markdown`, written on every save), `pinned, createdAt, editedAt` (epoch millis). Desktop stores `~/.Marky/marky.db`. Import/export still read and write one plain `.md` file. |
+| Search | An `@Fts4(contentEntity = NoteEntity::class)` table over `title` and `bodyText` (`unicode61` tokenizer), queried with `MATCH`. Every query word must match (as a word or word prefix) in the title or text. SQL ranks title matches above text matches, then by `editedAt`; snippets come from FTS `snippet()` with private-use highlight markers, so they never show Markdown syntax. Escaping the user's query for `MATCH` (`FtsQuery`) and turning snippet markers into highlight ranges (`HighlightParser`) are pure Kotlin in `:core:data`. |
 | File pickers | Hand-written `expect`/`actual`: Android SAF document picker, iOS Files picker, Desktop native open/save dialog |
 | Time | kotlinx-datetime + an injected `kotlin.time.Clock` |
 | Logging | Kermit |
@@ -123,17 +123,17 @@ The skills mention `kmp-integration-testing`, `kmp-ui-testing`, `kmp-kover-setup
 
 ## 6. Project map: where things live and where they go
 
-Layout (everything exists except `:core:markdown`, which is created when first needed; feature modules start as empty skeletons):
+Layout (feature modules start as empty skeletons):
 
 ```
-:androidApp                   Thin Android shell: Activity, manifest. Depends on :composeApp only.
+:androidApp                   Thin Android shell: Activity, MarkyApplication (starts Koin), manifest. Depends on :composeApp only.
 :desktopApp                   Thin desktop shell: main(), Window. Depends on :composeApp only.
 iosApp/                       Xcode shell consuming the ComposeApp framework.
-:composeApp                   App(), NavHost, Koin assembly, MarkyTheme applied. Wires everything.
+:composeApp                   App(), NavHost, Koin assembly (`di/InitKoin.kt`: `initKoin()`), MarkyTheme applied. Wires everything.
 build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application.compose, room).
-:core:domain                  Result/DataError, Note model, NoteRepository interface, Clock abstraction.
+:core:domain                  Result/DataError, Note/NoteSearchResult/HighlightedText models, NoteRepository interface.
 :core:database                Room: NoteEntity, NoteFts, NoteDao, MarkyDatabase, per-platform database builders (androidMain/iosMain/desktopMain).
-:core:data                    Room-backed note data source + mappers, file helpers for import/export, sample notes (seeded on first launch).
+:core:data                    RoomNoteRepository + mappers, FTS query/snippet helpers, coreDataModule (Koin), file helpers for import/export, sample notes (seeded on first launch).
 :core:presentation            UiText, ObserveAsEvents, expect/actual import/export pickers.
 :core:designsystem            Margin: theme, colors, typography (IBM Plex fonts), icons, dimens, all components.
 :core:markdown                JetBrains Markdown parsing, plain text for previews and search, toolbar text transforms.
@@ -155,7 +155,8 @@ Project-wide utilities: `Result`/`EmptyResult`/`Error`/`DataError` (plus `map`, 
 Rules:
 - Features **never** depend on each other. They navigate through callbacks wired in `:composeApp`.
 - Code lives in its feature until **two or more** features need it, then it moves to the right `core` module.
-- Only `:core:data` depends on `:core:database`. Room entities never leave the data layer; the platform database builder is provided through a Koin platform module.
+- Only `:core:data` depends on `:core:database`. Room entities never leave the data layer; the platform database builder is provided through a Koin platform module (`coreDataPlatformModule`).
+- Koin is started exactly once per platform through `initKoin()` in `:composeApp`: `MarkyApplication` (Android), `main()` (desktop), `iOSApp.init` (iOS). New feature modules are registered there. Time comes from an injected `kotlin.time.Clock` (`Clock.System` in `coreDataModule`).
 - `domain` depends on `core:domain` only. `presentation` may use its own domain plus `core:domain`, `core:presentation` and `core:designsystem`.
 - Strings, drawables and fonts live in the owning module's `src/commonMain/composeResources/`.
 - Platform code goes in `androidMain` / `iosMain` / `desktopMain` behind `expect`/`actual` or an interface.

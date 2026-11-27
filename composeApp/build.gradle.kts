@@ -21,6 +21,13 @@ kotlin {
             implementation(projects.feature.search.domain)
             implementation(projects.feature.search.data)
             implementation(projects.feature.search.presentation)
+
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+        }
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.android)
         }
     }
 }
