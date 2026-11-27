@@ -16,6 +16,7 @@ compose-multiplatform = "1.12.2"
 androidx-activity = "1.13.0"
 assertk = "0.28.1"
 jetbrains-lifecycle = "2.11.0"
+jetbrains-markdown = "0.7.18"
 jetbrains-navigation = "2.10.0"
 jetbrains-savedstate = "1.4.0"
 ksp = "2.3.14"
@@ -67,6 +68,9 @@ koin-android = { module = "io.insert-koin:koin-android" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+# Markdown
+jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
 
 # KotlinX
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
