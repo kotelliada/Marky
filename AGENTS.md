@@ -66,13 +66,14 @@ Adding any library not listed here requires the user's agreement first.
 | DI | Koin: `koin-core`, `koin-compose`, `koin-compose-viewmodel`, `koin-android` |
 | Navigation | JetBrains Navigation Compose `org.jetbrains.androidx.navigation:navigation-compose`, type-safe `@Serializable` routes |
 | Presentation | JetBrains lifecycle: `lifecycle-viewmodel`, `lifecycle-viewmodel-compose`, `lifecycle-runtime-compose`, `lifecycle-viewmodel-savedstate`, `savedstate` |
-| Serialization | kotlinx.serialization (nav routes and the notes index) |
+| Serialization | kotlinx.serialization (nav routes) |
 | Async | kotlinx.coroutines + Flow |
-| Storage | **Okio**: each note is `<id>.md` (raw Markdown only), and one `notes-index.json` holds `id, title, pinned, createdAt, editedAt` |
+| Storage | **Room (KMP)** with `sqlite-bundled` (`BundledSQLiteDriver`) and KSP, in `:core:database`. One `notes` table: `id, title, body` (raw Markdown), `pinned, createdAt, editedAt`. Import/export still read and write one plain `.md` file. |
+| Search | An `@Fts4(contentEntity = NoteEntity::class)` table over `title` and `body` (`unicode61` tokenizer), queried with `MATCH`. SQL ranks title matches above body matches; snippets come from FTS `snippet()` with highlight markers. Escaping the user's query for `MATCH` and turning snippet markers into highlight ranges are pure Kotlin. |
 | File pickers | Hand-written `expect`/`actual`: Android SAF document picker, iOS Files picker, Desktop native open/save dialog |
 | Time | kotlinx-datetime + an injected `kotlin.time.Clock` |
 | Logging | Kermit |
-| Build | Gradle 9, AGP `com.android.kotlin.multiplatform.library`, convention plugins in `build-logic`, version catalog |
+| Build | Gradle 9, AGP `com.android.kotlin.multiplatform.library`, KSP (Room compiler), convention plugins in `build-logic`, version catalog |
 
 ### Testing
 
@@ -82,7 +83,7 @@ Adding any library not listed here requires the user's agreement first.
 | Assertions | AssertK |
 | Flows | Turbine |
 | Coroutines | `kotlinx-coroutines-test`, `UnconfinedTestDispatcher` |
-| File system | Okio `FakeFileSystem` (in memory, so the tests stay unit tests) |
+| Database | Room data sources are tested against hand-written fake DAOs. DAO SQL and FTS queries are **not** unit-tested (they need a real SQLite engine, which would make them integration tests), so keep them simple and put logic in Kotlin. |
 | Doubles | Hand-written fakes. No MockK, Mockito or JUnit5. |
 | Coverage | Kover: reports only, not a gate |
 
@@ -91,7 +92,6 @@ Adding any library not listed here requires the user's agreement first.
 | Library | Why not |
 |---|---|
 | Ktor | No backend or network |
-| Room | Notes are `.md` files on disk |
 | DataStore | No settings; the theme follows the system |
 | Coil | No images (out of scope) |
 | Moko Permissions | Document pickers need no runtime permissions |
@@ -107,14 +107,14 @@ Invoke the matching skill **before** writing the code. Several can apply at once
 
 | Skill | Invoke when |
 |---|---|
-| `kmp-module-structure` | Adding or moving modules, Gradle and convention plugins, the version catalog, "where does X live?" |
+| `kmp-module-structure` | Adding or moving modules, Gradle and convention plugins (including `room`), the version catalog, "where does X live?". Its `kspIosX64` doesn't apply: we have no x64 iOS target. |
 | `kmp-presentation-mvi` | Any ViewModel, State/Action/Event, Root/Screen composable, UiText, SavedStateHandle |
 | `kmp-compose-architecture` | Screen structure, recomposition and stability, state ownership, side effects, lazy lists, TextField state (the editor) |
 | `kmp-compose-components` | Any non-screen composable, above all `:core:designsystem` components, previews, icons, string resources |
 | `kmp-navigation` | Routes, nav graphs, cross-feature navigation, wiring in `:composeApp` |
 | `kmp-di-koin` | Koin modules, injection, `startKoin` on Android, iOS and Desktop |
-| `kmp-data-layer` | Data sources, repositories, mappers. Apply its patterns to Okio + the JSON index, not Ktor or Room. |
-| `kmp-error-handling` | `Result`, `DataError`, typed errors (import failures, file I/O, validation) |
+| `kmp-data-layer` | Data sources, DAOs, Room entities, the FTS table, mappers, the database builder. Ignore its Ktor, DataStore, token and offline-first parts (no network). |
+| `kmp-error-handling` | `Result`, `DataError`, typed errors (import failures, file I/O, SQLite failures as `androidx.sqlite.SQLiteException` → `DataError.Local`, validation) |
 | `kmp-unit-testing` | Every unit test. Start with its break-vector method. |
 
 The skills mention `kmp-integration-testing`, `kmp-ui-testing`, `kmp-kover-setup`, `compose-adaptive-layouts`, `android-background` and `kotlin-mutation-testing`. They are **not installed** in this repo; ignore those references. Mutation testing runs only when the user explicitly asks for it.
@@ -130,9 +130,10 @@ Layout (everything exists except `:core:markdown`, which is created when first n
 :desktopApp                   Thin desktop shell: main(), Window. Depends on :composeApp only.
 iosApp/                       Xcode shell consuming the ComposeApp framework.
 :composeApp                   App(), NavHost, Koin assembly, MarkyTheme applied. Wires everything.
-build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application.compose).
+build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application.compose, room).
 :core:domain                  Result/DataError, Note model, NoteRepository interface, Clock abstraction.
-:core:data                    Okio note store (<id>.md + notes-index.json), file helpers, sample notes.
+:core:database                Room: NoteEntity, NoteFts, NoteDao, MarkyDatabase, per-platform database builders (androidMain/iosMain/desktopMain).
+:core:data                    Room-backed note data source + mappers, file helpers for import/export, sample notes (seeded on first launch).
 :core:presentation            UiText, ObserveAsEvents, expect/actual import/export pickers.
 :core:designsystem            Margin: theme, colors, typography (IBM Plex fonts), icons, dimens, all components.
 :core:markdown                JetBrains Markdown parsing, plain text for previews and search, toolbar text transforms.
@@ -142,17 +143,19 @@ build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.
 Features: `notes` (list + import), `note` (edit, preview, export, delete), `search`. Ask before adding another.
 
 Convention plugins (`build-logic/convention`, IDs `io.kotelliada.marky.convention.*`, aliases `libs.plugins.convention.*`):
-- `kmp.library`: `core:domain`, `core:data`, every feature `domain` and `data`. Targets: Android (KMP library + host tests), Desktop `jvm("desktop")`, `iosArm64`, `iosSimulatorArm64`.
+- `kmp.library`: `core:domain`, `core:database`, `core:data`, every feature `domain` and `data`. Targets: Android (KMP library + host tests), Desktop `jvm("desktop")`, `iosArm64`, `iosSimulatorArm64`.
 - `cmp.library`: `core:presentation`, `core:designsystem`. Adds Compose without Material 3, so **only `:core:designsystem` declares `material3`**, which enforces section 3 at build level.
 - `cmp.feature`: every feature `presentation`. Adds `core:domain`/`core:presentation`/`core:designsystem`, Koin, navigation, lifecycle and savedstate.
 - `cmp.application`: `:composeApp` (iOS framework `ComposeApp`).
 - `android.application.compose`: `:androidApp`.
+- `room`: `:core:database` only (on top of `kmp.library`). Applies KSP and the Room Gradle plugin, exports `room-runtime` and `sqlite-bundled`, keeps the schema in `core/database/schemas/` (committed), and runs the Room compiler for `kspAndroid`, `kspDesktop`, `kspIosArm64`, `kspIosSimulatorArm64`.
 
 Project-wide utilities: `Result`/`EmptyResult`/`Error`/`DataError` (plus `map`, `onSuccess`, `onFailure`, `asEmptyResult`) live in `core:domain` (`io.kotelliada.marky.core.domain.util`). `UiText` and `ObserveAsEvents` live in `core:presentation` (`io.kotelliada.marky.core.presentation.util`). `DataError` has only `Local`, because there is no backend. `DataError.toUiText()` is added once a feature needs it and the design system has the copy.
 
 Rules:
 - Features **never** depend on each other. They navigate through callbacks wired in `:composeApp`.
 - Code lives in its feature until **two or more** features need it, then it moves to the right `core` module.
+- Only `:core:data` depends on `:core:database`. Room entities never leave the data layer; the platform database builder is provided through a Koin platform module.
 - `domain` depends on `core:domain` only. `presentation` may use its own domain plus `core:domain`, `core:presentation` and `core:designsystem`.
 - Strings, drawables and fonts live in the owning module's `src/commonMain/composeResources/`.
 - Platform code goes in `androidMain` / `iosMain` / `desktopMain` behind `expect`/`actual` or an interface.
@@ -192,7 +195,7 @@ A unit of work is done only when **all** of the following hold:
    - iOS: `./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64`, then
      `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -sdk iphonesimulator -configuration Debug build`
 4. **Local unit tests pass** on all targets: `./gradlew allTests testAndroidHostTest`
-5. **New or changed logic has unit tests** in `commonTest`, written per `kmp-unit-testing` (break vectors first: unicode and emoji, boundaries, ordering). This covers ViewModels, the note store and index, Markdown transforms, search ranking and snippets, time formatting, import title rules and sorting.
+5. **New or changed logic has unit tests** in `commonTest`, written per `kmp-unit-testing` (break vectors first: unicode and emoji, boundaries, ordering). This covers ViewModels, the Room data source (against a fake DAO), entity mappers, FTS query escaping and snippet parsing, Markdown transforms, search ranking and snippets, time formatting, import title rules and sorting.
 6. **Conventions:** the relevant skills were followed, module dependency rules hold, strings come from resources, and each component has a preview per state.
 7. **Reported and committed:** assumptions are listed and the work is committed (see section 7).
 

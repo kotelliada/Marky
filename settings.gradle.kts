@@ -38,6 +38,7 @@ include(":desktopApp")
 include(":composeApp")
 
 include(":core:domain")
+include(":core:database")
 include(":core:data")
 include(":core:presentation")
 include(":core:designsystem")
