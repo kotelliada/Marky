@@ -1,8 +1,10 @@
 package io.kotelliada.marky.core.data.di
 
+import io.kotelliada.marky.core.data.file.MarkdownNoteFileCodec
 import io.kotelliada.marky.core.data.note.RoomNoteRepository
 import io.kotelliada.marky.core.database.MarkyDatabase
 import io.kotelliada.marky.core.database.createMarkyDatabase
+import io.kotelliada.marky.core.domain.file.NoteFileCodec
 import io.kotelliada.marky.core.domain.note.NoteRepository
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
@@ -20,4 +22,5 @@ val coreDataModule = module {
     single { get<MarkyDatabase>().noteDao() }
     single<Clock> { Clock.System }
     singleOf(::RoomNoteRepository) { bind<NoteRepository>() }
+    singleOf(::MarkdownNoteFileCodec) { bind<NoteFileCodec>() }
 }
