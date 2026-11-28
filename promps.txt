@@ -53,3 +53,7 @@ Let's next build the entire design system. This means:
 
 Next, let's work on the notes storage setup. We want to implement the whole local database, the database schema, and have that as a reusable part of our infrastructure in a
   separate module, as per the system prompt.
+
+# File picker implementation
+
+Please start working on the file picker according to the specification.
