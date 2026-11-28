@@ -70,7 +70,7 @@ Adding any library not listed here requires the user's agreement first.
 | Async | kotlinx.coroutines + Flow |
 | Storage | **Room (KMP)** with `sqlite-bundled` (`BundledSQLiteDriver`) and KSP, in `:core:database`. One `notes` table: `id` (`Long`, the rowid), `title, body` (raw Markdown), `bodyText` (body as plain text via `:core:markdown`, written on every save), `pinned, createdAt, editedAt` (epoch millis). Desktop stores `~/.Marky/marky.db`. Import/export still read and write one plain `.md` file. |
 | Search | An `@Fts4(contentEntity = NoteEntity::class)` table over `title` and `bodyText` (`unicode61` tokenizer), queried with `MATCH`. Every query word must match (as a word or word prefix) in the title or text. SQL ranks title matches above text matches, then by `editedAt`; snippets come from FTS `snippet()` with private-use highlight markers, so they never show Markdown syntax. Escaping the user's query for `MATCH` (`FtsQuery`) and turning snippet markers into highlight ranges (`HighlightParser`) are pure Kotlin in `:core:data`. |
-| File pickers | Hand-written `expect`/`actual`: Android SAF document picker, iOS Files picker, Desktop native open/save dialog |
+| File pickers | Hand-written `expect`/`actual` in `:core:filepicker`: Android SAF document picker, iOS Files picker, Desktop native open/save dialog |
 | Time | kotlinx-datetime + an injected `kotlin.time.Clock` |
 | Logging | Kermit |
 | Build | Gradle 9, AGP `com.android.kotlin.multiplatform.library`, KSP (Room compiler), convention plugins in `build-logic`, version catalog |
@@ -131,12 +131,13 @@ Layout (feature modules start as empty skeletons):
 iosApp/                       Xcode shell consuming the ComposeApp framework.
 :composeApp                   App(), NavHost, Koin assembly (`di/InitKoin.kt`: `initKoin()`), MarkyTheme applied. Wires everything.
 build-logic/                  Convention plugins (kmp.library, cmp.library, cmp.feature, cmp.application, android.application.compose, room).
-:core:domain                  Result/DataError, Note/NoteSearchResult/HighlightedText models, NoteRepository interface.
+:core:domain                  Result/DataError, Note/NoteSearchResult/HighlightedText models, NoteRepository and NoteFileCodec interfaces.
 :core:database                Room: NoteEntity, NoteFts, NoteDao, MarkyDatabase, per-platform database builders (androidMain/iosMain/desktopMain).
-:core:data                    RoomNoteRepository + mappers, FTS query/snippet helpers, coreDataModule (Koin), file helpers for import/export, sample notes (seeded on first launch).
-:core:presentation            UiText, ObserveAsEvents, expect/actual import/export pickers.
+:core:data                    RoomNoteRepository + mappers, FTS query/snippet helpers, coreDataModule (Koin), MarkdownNoteFileCodec (import/export file rules), sample notes (seeded on first launch).
+:core:presentation            UiText, ObserveAsEvents, MarkdownFileType (exposes :core:filepicker to features).
 :core:designsystem            Margin: theme, colors, typography (IBM Plex fonts), icons, dimens, all components.
 :core:markdown                JetBrains Markdown parsing, plain text for previews and search, toolbar text transforms.
+:core:filepicker              Generic, app-independent open/save file pickers for any FileType (expect/actual). No Marky dependencies.
 :feature:<name>:domain|data|presentation
 ```
 
@@ -144,7 +145,7 @@ Features: `notes` (list + import), `note` (edit, preview, export, delete), `sear
 
 Convention plugins (`build-logic/convention`, IDs `io.kotelliada.marky.convention.*`, aliases `libs.plugins.convention.*`):
 - `kmp.library`: `core:domain`, `core:database`, `core:data`, every feature `domain` and `data`. Targets: Android (KMP library + host tests), Desktop `jvm("desktop")`, `iosArm64`, `iosSimulatorArm64`.
-- `cmp.library`: `core:presentation`, `core:designsystem`. Adds Compose without Material 3, so **only `:core:designsystem` declares `material3`**, which enforces section 3 at build level.
+- `cmp.library`: `core:presentation`, `core:designsystem`, `core:filepicker`. Adds Compose without Material 3, so **only `:core:designsystem` declares `material3`**, which enforces section 3 at build level.
 - `cmp.feature`: every feature `presentation`. Adds `core:domain`/`core:presentation`/`core:designsystem`, Koin, navigation, lifecycle and savedstate.
 - `cmp.application`: `:composeApp` (iOS framework `ComposeApp`).
 - `android.application.compose`: `:androidApp`.
@@ -155,6 +156,7 @@ Project-wide utilities: `Result`/`EmptyResult`/`Error`/`DataError` (plus `map`, 
 Rules:
 - Features **never** depend on each other. They navigate through callbacks wired in `:composeApp`.
 - Code lives in its feature until **two or more** features need it, then it moves to the right `core` module.
+- `:core:filepicker` depends on no other project module and carries no app strings (callers pass dialog titles), so it can be reused in other apps. Marky-specific file rules live in `NoteFileCodec` (`:core:domain`, implemented in `:core:data`).
 - Only `:core:data` depends on `:core:database`. Room entities never leave the data layer; the platform database builder is provided through a Koin platform module (`coreDataPlatformModule`).
 - Koin is started exactly once per platform through `initKoin()` in `:composeApp`: `MarkyApplication` (Android), `main()` (desktop), `iOSApp.init` (iOS). New feature modules are registered there. Time comes from an injected `kotlin.time.Clock` (`Clock.System` in `coreDataModule`).
 - `domain` depends on `core:domain` only. `presentation` may use its own domain plus `core:domain`, `core:presentation` and `core:designsystem`.

@@ -43,6 +43,7 @@ include(":core:data")
 include(":core:presentation")
 include(":core:designsystem")
 include(":core:markdown")
+include(":core:filepicker")
 
 include(":feature:notes:domain")
 include(":feature:notes:data")
